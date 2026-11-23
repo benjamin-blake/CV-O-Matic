@@ -43,7 +43,7 @@ LIMITS: dict[str, tuple[int | None, int | None]] = {
 }
 
 # Lenient sidebar budget for the left-hand column (Profile + Selected Projects +
-# Education). WARN-only heuristic, not a hard gate: job-seeker CVs tolerate an
+# Education). WARN-only heuristic, not a hard gate: CV-O-Matic CVs tolerate an
 # approximate signal here rather than the rendered-height measurement that a
 # precise check would need. Calibrated above the typical shipped projects-total
 # so it flags egregiously long sidebars (which risk truncating Education) while
@@ -417,7 +417,7 @@ def _project_strings(projects_yaml: Path) -> list[str]:
 
 
 def check_projects(posting: Path, issues: list[Issue]) -> None:
-    """3e. Left-hand column hygiene (job-seeker CV sidebar). WARN only.
+    """3e. Left-hand column hygiene (CV-O-Matic CV sidebar). WARN only.
 
     Projects render in the left column with Profile and Education; long project
     strings push Education off the bottom of the page. Two lenient, build-time

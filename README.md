@@ -1,6 +1,8 @@
-# cv-template
+# CV-O-Matic
 
-An agent-first job search for data and analytics people, driven by [Claude Code](https://claude.com/claude-code). Describe what you want in plain English; Claude finds postings, scores them against your criteria, builds a tailored CV and application answers on request, and keeps track of every application.
+An agent-first job search, driven by [Claude Code](https://claude.com/claude-code). Describe what you want in plain English; Claude finds postings, scores them against your criteria, builds a tailored CV and application answers on request, and keeps track of every application.
+
+**Who it is for:** anyone looking for a job. It started life as a UK data and analytics job search, so the examples, the example profile and the starter company watchlist all lean that way, but nothing in the engine is specific to data: your CV, your criteria and your watchlist decide what it looks for and how it scores. `/onboard` sets all three up for your field.
 
 ## What it is, and what it is not
 
@@ -28,12 +30,25 @@ That is it. `/onboard` replaces the fictional example profile (Sherlock Holmes) 
 
 You can use slash commands, but you do not have to remember them. Just ask:
 
-- "What's worth applying to?" (a pipeline briefing: top picks, ageing matches, interviews, funnel)
-- "Build me a CV for the Acme posting"
-- "Draft my application answers for Acme"
-- "Shorten the summary on the Acme CV" (the edit is applied, re-rendered, and the reason is remembered so the same tweak happens automatically next time)
-- "Mark Acme as applied"
-- "I got an offer from Acme, base of 90k" (triggers a negotiation brief)
+- "What's worth applying to?" (a pipeline briefing: top picks, ageing matches, interviews, evidence gaps, funnel)
+- "Build me a CV for the Home Office posting"
+- "Draft my application answers for the Home Office"
+- "Shorten the summary on the Home Office CV" (the edit is applied, re-rendered, and the reason is remembered so the same tweak happens automatically next time)
+- "Mark the Home Office as applied"
+- "I got an offer from the Home Office, £62k base" (triggers a negotiation brief)
+- "Oh, I've done that!" when a posting mentions experience that is not in your library yet (see below)
+
+### It gets better the more it knows
+
+Every CV, review and application answer is built only from your **achievement library** (`cv/cv_achievements.yaml`): nothing is ever invented to fill a gap. So the quality of everything it produces rises with the detail you give it.
+
+Most of us under-describe our own experience, and the best reminder of forgotten work is a job posting that asks for it: "oh, I've done that, I should write it down!" CV-O-Matic is built to catch that moment for you:
+
+- **Before each CV is built**, it lists anything the posting asks for that your library does not cover, and asks whether you have done it.
+- **In your briefing**, it highlights gaps that keep coming up across several good postings, where one new entry pays off the most.
+- **Any time in conversation**, saying something like "I actually led a migration like that" captures it properly: what you did, what changed, and a number if there is one. You confirm it before it is saved.
+
+The habit worth building: whenever a posting jogs your memory, say so. It takes a minute, and every future application benefits.
 
 ### Optional automation
 
@@ -67,7 +82,7 @@ Claude does the thinking; Python only does what Claude should not do at runtime:
 | Command | What it does |
 | --- | --- |
 | `/onboard` | First-run setup: your CV, criteria, answers, first CV, optional automation |
-| `/briefing` | Read-only pipeline snapshot: top picks, ageing, in flight, interviews, funnel |
+| `/briefing` | Read-only pipeline snapshot: top picks, ageing, in flight, interviews, evidence gaps, funnel |
 | `/scan-indeed` | Search Indeed, score, add matches to `applications.yaml` via PR |
 | `/scan-companies` | Scan the company watchlist via ATS APIs, score, add matches |
 | `/build-cv {slug}` | Tailored CV, personal statement and application pack for a posting |
@@ -86,7 +101,7 @@ Claude does the thinking; Python only does what Claude should not do at runtime:
 ## Customising
 
 - **What you are looking for:** `config/job_seeker.yaml` holds target roles, seniority, location and office-day rules, pay floors and targets, must-haves, deal-breakers, role families and scoring weights. Edit it directly or ask Claude to ("raise my salary floor to 75k", "add fintech to the deal-breakers"), then `/rescore-application` to re-apply the rules to existing postings.
-- **Where to look:** `config/company_watchlist.yaml` lists employers checked directly. It ships tuned for UK data and analytics roles; prune it by hand or with `/prune-watchlist`, and extend it with `/discover-companies`.
+- **Where to look:** `config/company_watchlist.yaml` lists employers checked directly. It ships tuned for UK data and analytics roles; if you work in another field, `/onboard` and `/discover-companies` will help you replace it with employers in yours. Prune it by hand or with `/prune-watchlist`.
 - **How the CV looks:** `cv/cv_config.yaml` has the colour schemes and template settings. Ask for a different scheme in plain English, or set `default_color_scheme`.
 - **What the CV says:** `cv/cv_core_data.yaml` (roles, education, skills) and `cv/cv_achievements.yaml` (the achievement library). These are your source of truth; edit them via `/onboard` or by asking Claude, and keep every metric honest.
 

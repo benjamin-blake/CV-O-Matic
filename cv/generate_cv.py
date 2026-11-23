@@ -4,8 +4,8 @@ Unified CV Generator
 Generates HTML and PDF CVs from YAML data with posting-specific customization.
 
 Usage:
-    python generate_cv.py --posting postings/2026-01-15_acme_senior_data_analyst
-    python generate_cv.py --posting postings/2026-01-15_acme_senior_data_analyst --html-only
+    python generate_cv.py --posting postings/2026-01-15_home_office_senior_data_analyst
+    python generate_cv.py --posting postings/2026-01-15_home_office_senior_data_analyst --html-only
     python generate_cv.py --posting postings/... --allow-example   # smoke-test on the example profile
 
 The script will:

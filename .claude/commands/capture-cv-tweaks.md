@@ -6,14 +6,14 @@ argument-hint: <posting_slug>
 # /capture-cv-tweaks
 
 Turn the edits the candidate makes by hand after `/build-cv` into standing rules, so
-each class of tweak never has to be made twice. This is the job-seeker
+each class of tweak never has to be made twice. This is the CV-O-Matic
 friction-capture loop: diff what `/build-cv` generated against what the candidate
 actually shipped, classify the delta, and - on a pattern's **second** appearance
 across postings - promote it into `build-cv.md` guidance or a deterministic
 `cv/check_lengths.py` check. The ledger at `docs/cv-tweak-ledger.yaml` is the
 memory that distinguishes a one-off from a recurring pattern.
 
-**Posting slug:** `$1` (a directory under `postings/`, e.g. `2026-01-15_acme_senior_data_analyst`)
+**Posting slug:** `$1` (a directory under `postings/`, e.g. `2026-01-15_home_office_senior_data_analyst`)
 
 If `$1` is empty, ask the user which posting to capture from.
 
@@ -125,7 +125,7 @@ prior entry with the **same class and same substance** exists from a
     do **not** edit those. Log the entry as `engine_blocked` and surface it to
     the user as a separate decision.
 
-Generalise, do not hard-code the instance. "The summary for the Acme posting was 40 chars
+Generalise, do not hard-code the instance. "The summary for the Home Office posting was 40 chars
 too long" is not a rule; "summaries tend to run ~10% over the 600-char cap when
 they name the company twice - target 540" is.
 

@@ -4,13 +4,13 @@ description: >-
   Use when the user asks, in conversation, to refresh, redo, re-run, update,
   or re-judge the analytical review (application_review.json) for a specific
   posting because the posting text or the CV/achievement library changed -
-  e.g. "redo the review for Acme, I updated the posting text", "the
-  achievement library changed, refresh the Globex review", "re-judge the
-  Initech posting cold". This is the conversational front door to
+  e.g. "redo the review for the Home Office, I updated the posting text", "the
+  achievement library changed, refresh the Scotland Yard review", "re-judge the
+  Baskerville & Co posting cold". This is the conversational front door to
   /review-application; it exists so the user does not have to remember the
   slash command. Do NOT use this for a plain read-only question about an
-  existing review ("what gaps did the review flag for Acme?", "what's the
-  match score for Globex?") - just read and answer from the JSON. Do NOT use
+  existing review ("what gaps did the review flag for the Home Office?", "what's the
+  match score for Scotland Yard?") - just read and answer from the JSON. Do NOT use
   this for a bulk re-application of scoring RULES across many postings after
   a weights/deal-breaker change in config/job_seeker.yaml - that is
   /rescore-application, a deterministic re-computation from stored

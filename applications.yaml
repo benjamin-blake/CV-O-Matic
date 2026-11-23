@@ -1,4 +1,4 @@
-# applications.yaml - canonical state spine for job-seeker.
+# applications.yaml - canonical state spine for CV-O-Matic.
 # One entry per posting, keyed by slug. Edit directly (or ask Claude Code) to
 # flip status: open / applied / declined / closed / rejected.
 # Scan routines append entries via models.applications_index.upsert.

@@ -31,7 +31,7 @@ Deal-breaker reviews (non-empty ``deal_breakers_triggered``) are left untouched.
 Run from the repo root:
 
     python -m models.rescore                      # dry-run, all reviews, md table
-    python -m models.rescore --slug 2026-01-15_acme_senior_data_analyst
+    python -m models.rescore --slug 2026-01-15_home_office_senior_data_analyst
     python -m models.rescore --status open --family core
     python -m models.rescore --all --write        # persist to json + applications.yaml
     python -m models.rescore --format json        # machine-readable deltas

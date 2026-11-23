@@ -29,7 +29,7 @@ and leaves untouched any posting where no rule actually applies.
 **Scope argument:** `$1` (may be empty)
 
 - empty → default scope is `--status open` (the postings you might still act on)
-- a slug (e.g. `2026-01-15_acme_senior_data_analyst`) → just that posting
+- a slug (e.g. `2026-01-15_home_office_senior_data_analyst`) → just that posting
 - `--all` → every posting with a review
 - `--status <status>` → restrict by `applications.yaml` status
 - `--family <key>` → restrict by role family, where `<key>` is a family defined in `scoring.role_family_modifiers` in `config/job_seeker.yaml` (the example config defines `core`, `stretch`, `leadership`)
