@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/job-seeker/config/application_review.schema.json",
+  "title": "ApplicationReview",
+  "description": "Detailed analytical review for a posting under postings/{slug}/. Written by /review-application; consumed by /build-cv and on-demand reading. The workflow-spine fields (status, status_changed_at, cv_built_at) live in the root-level applications.yaml, not here.",
+  "type": "object",
+  "required": [
+    "posting_slug",
+    "title",
+    "company",
+    "match_score",
+    "verdict",
+    "essential_criteria",
+    "artefacts",
+    "generated_at"
+  ],
+  "properties": {
+    "posting_slug": {
+      "type": "string",
+      "description": "Directory name under postings/. Format: YYYY-MM-DD_{company}_{title_kebab}. Date prefix is the discovery date (ASC-sortable).",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}_[a-z0-9_]+$"
+    },
+    "posting_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "title": { "type": "string" },
+    "company": { "type": "string" },
+    "location": { "type": ["string", "null"] },
+    "salary": { "type": ["string", "null"] },
+    "remote_policy": {
+      "type": ["string", "null"],
+      "enum": ["remote", "hybrid", "onsite", "flexible", "unknown", null]
+    },
+    "seniority": {
+      "type": ["string", "null"],
+      "enum": ["graduate", "mid", "senior", "staff", "principal", "lead", "head", "unknown", null]
+    },
+    "deadline": { "type": ["string", "null"], "format": "date" },
+    "discovered_via": {
+      "type": "string",
+      "enum": ["indeed", "company_watchlist", "email", "manual", "linkedin", "other"]
+    },
+    "match_score": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["STRONG", "MODERATE-STRONG", "MODERATE", "WEAK", "REJECT"]
+    },
+    "verdict_justification": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "description": "Plain-language brief on whether this posting suits the candidate. Written by /scan-indeed, /scan-companies, and /review-application. Each field is a short paragraph (2-5 sentences); skip a field only if the posting genuinely says nothing about it.",
+      "properties": {
+        "office_and_location": {
+          "type": "string",
+          "description": "Where the role is based, remote/hybrid/onsite expectations, commute reality from the primary location (location.primary). Call out anything notable: relocation requirements, specific office days, multi-site travel."
+        },
+        "compensation": {
+          "type": "string",
+          "description": "Stated salary vs the candidate's bands in config/job_seeker.yaml (compensation floor / target / stretch, sector-adjusted). Comment on bonus, equity, benefits if mentioned. If salary is absent, say so and infer from seniority where possible."
+        },
+        "mission_and_culture": {
+          "type": "string",
+          "description": "What the company actually builds, mission statement, and how it maps to the candidate's strong preferences in config/job_seeker.yaml. Note any culture signals from the posting (engineering culture, autonomy, on-call expectations, learning budget)."
+        },
+        "technical_fit": {
+          "type": "string",
+          "description": "Tech stack alignment with the candidate's must-haves and strong preferences in config/job_seeker.yaml. Where the role plays to their strengths and where it stretches them. Be concrete about the named tools."
+        },
+        "overall": {
+          "type": "string",
+          "description": "One-paragraph synthesis: is this appropriate to apply to? What should the candidate pay attention to in the JD or at interview? Honest verdict; do not boost a weak match."
+        }
+      }
+    },
+    "dimension_scores": {
+      "type": "object",
+      "properties": {
+        "must_have_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "strong_preference_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "seniority_fit": { "type": "number", "minimum": 0, "maximum": 1 },
+        "mission_alignment": { "type": "number", "minimum": 0, "maximum": 1 },
+        "compensation_fit": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "essential_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["criterion", "match"],
+        "properties": {
+          "criterion": { "type": "string" },
+          "match": { "type": "string", "enum": ["FULL", "PARTIAL", "NONE"] },
+          "evidence": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "nice_to_have": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["criterion", "match"],
+        "properties": {
+          "criterion": { "type": "string" },
+          "match": { "type": "string", "enum": ["FULL", "PARTIAL", "NONE"] },
+          "evidence": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["issue", "impact"],
+        "properties": {
+          "issue": { "type": "string" },
+          "impact": { "type": "string" },
+          "mitigation": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "deal_breakers_triggered": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "artefacts": {
+      "type": "object",
+      "properties": {
+        "posting": { "type": ["string", "null"] },
+        "cv_pdf": { "type": ["string", "null"] },
+        "cv_html": { "type": ["string", "null"] },
+        "personal_statement": { "type": ["string", "null"] }
+      }
+    },
+    "generated_at": { "type": "string", "format": "date-time" }
+  }
+}

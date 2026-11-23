@@ -1,0 +1,61 @@
+# Canonical base answers for UK application forms, keyed by question type.
+# Consumed by /application-pack {slug} to assemble the "standard answers"
+# section of postings/{slug}/application_pack.md.
+#
+# >>> EXAMPLE PROFILE <<<
+# These answers belong to a fictional example candidate. /onboard rewrites them.
+#
+# Rules:
+# - British English, no em-dashes or en-dashes, first person singular.
+# - Grounding is hard: no metric or claim beyond cv/cv_achievements.yaml,
+#   cv/cv_core_data.yaml, config/job_seeker.yaml, or these answers.
+# - Where an answer varies by sector, a `variants` block holds a
+#   `private_sector` and a `uk_civil_service` value. Sector detection reuses
+#   the signals in config/job_seeker.yaml -> compensation.sector_floor_overrides
+#   .uk_civil_service.rationale. Default to private_sector when no signal is present.
+# - notice_period is date_sensitive: the consuming command MUST re-derive the
+#   correct phrasing from the current date at generation time, never paste a
+#   stale sentence.
+
+notice_period:
+  date_sensitive: true
+  final_day: null                  # YYYY-MM-DD once notice is handed in, else null
+  available_from: null             # YYYY-MM-DD first working day after final_day
+  # Selection logic for the consuming command:
+  #   final_day is null          -> use `standard`
+  #   current_date <= final_day  -> use `while_serving_notice`
+  #   current_date >  final_day  -> use `after_final_day`
+  standard: "My notice period is one month."
+  while_serving_notice: "I am currently serving my notice period, with a final day of {final_day}. I am available to start from {available_from}."
+  after_final_day: "I am immediately available to start."
+
+right_to_work: "I have the unrestricted right to work in the UK and do not require visa sponsorship now or in the future."
+
+# Only claim a clearance tier actually held. Set to null if none.
+security_clearance: null
+
+# "What are your salary expectations?" When the form has a numeric FIELD, enter
+# `figure_gbp`. For a free-text box or a recruiter conversation, use `range`.
+# Grounded in config/job_seeker.yaml -> compensation.base_salary_target_gbp and
+# the uk_civil_service sector override.
+salary_expectation:
+  policy: single_figure_preferred_range_fallback
+  preference: single_figure
+  variants:
+    private_sector:
+      figure_gbp: 80000
+      single: "My salary expectation is £80,000."
+      range: "My salary expectation is in the region of £75,000 to £90,000, depending on the overall package."
+    uk_civil_service:
+      figure_gbp: 62000
+      single: "My salary expectation is £62,000. I recognise the Civil Service Pension and wider benefits form a material part of total reward."
+      range: "My salary expectation is in the region of £58,000 to £70,000, depending on the overall package. I recognise that the Civil Service Pension and wider benefits form a material part of total reward."
+
+location_and_hybrid: "I am based in London and looking for remote or hybrid roles. I am happy with regular hybrid attendance for London-based positions. For roles based outside London I would need office attendance to be minimal, in the region of one to two days per month."
+
+interview_availability: "I am flexible on timing and can usually accommodate interviews at short notice."
+
+referees: "References are available on request."
+
+# One paragraph on why you are looking to move. Keep it positive and factual.
+why_leaving: "I am looking for a larger remit, leading an analytics function where data quality and clear communication with decision-makers are treated as first-class work."

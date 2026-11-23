@@ -1,0 +1,105 @@
+# Achievement library - the source of truth for every claim on a generated CV.
+#
+# >>> EXAMPLE PROFILE <<<
+# These belong to a fictional example candidate. Run /onboard to replace them
+# with your own. /build-cv selects from this file; cv-reviewer rejects any CV
+# highlight that exaggerates a metric or upgrades qualifier language beyond
+# what is written here, so be accurate rather than modest or inflated.
+#
+# Fields:
+#   id               unique, short, snake_case (convention: {role prefix}_{topic})
+#   role_id          one of the role ids in cv_core_data.yaml, or n/a for
+#                    personal / cross-role achievements
+#   description      what you did
+#   impact           what changed because of it
+#   impact_metric    the headline number or outcome, as you would defend it
+#   visual_emphasis  true for the few you want bolded when selected
+#   signals          any of: technical_depth, delivery, influence,
+#                    leadership, commercial, ai_tooling
+
+achievements:
+- id: bs_team_build
+  role_id: baker_street
+  description: Built and led an analytics team of 4, setting up the hiring process, a shared SQL style guide and fortnightly
+    peer reviews of every published analysis
+  impact: Cut rework on published analyses by half and kept every hire through their first year
+  impact_metric: 50%
+  visual_emphasis: true
+  signals:
+  - leadership
+  - delivery
+- id: bs_kpi_framework
+  role_id: baker_street
+  description: Designed a single KPI framework with operations and finance leads, replacing 14 competing spreadsheet
+    definitions with one governed set in Power BI
+  impact: Monthly reporting went from 5 days of reconciliation to 1
+  impact_metric: 5 days to 1
+  visual_emphasis: true
+  signals:
+  - influence
+  - delivery
+  - commercial
+- id: bs_data_quality
+  role_id: baker_street
+  description: Introduced automated data quality checks with dbt tests on the Snowflake warehouse, with alerts routed to
+    the owning team
+  impact: Data incidents found by stakeholders before the analytics team fell from roughly weekly to under one a quarter
+  impact_metric: weekly to quarterly
+  visual_emphasis: false
+  signals:
+  - technical_depth
+  - delivery
+- id: dc_member_insights
+  role_id: diogenes_club
+  description: Analysed member attendance and survey data to find the drivers of lapsed memberships, presenting findings
+    to the committee with a clear recommendation
+  impact: The committee's renewal campaign, based on the analysis, lifted renewals by 12%
+  impact_metric: 12%
+  visual_emphasis: true
+  signals:
+  - influence
+  - commercial
+- id: dc_self_serve
+  role_id: diogenes_club
+  description: Moved recurring ad hoc report requests onto self-serve Tableau dashboards with documented definitions
+  impact: Freed around a day a week of analyst time for project work
+  impact_metric: 1 day/week
+  visual_emphasis: false
+  signals:
+  - delivery
+  - influence
+- id: dc_migration
+  role_id: diogenes_club
+  description: Co-led the migration of reporting from an on-premise SQL Server to Snowflake, owning the test plan and
+    stakeholder sign-off
+  impact: Delivered on schedule with no reporting downtime
+  impact_metric: zero downtime
+  visual_emphasis: false
+  signals:
+  - technical_depth
+  - delivery
+- id: ms_lab_pipeline
+  role_id: montague_street
+  description: Replaced manual copy-and-paste of instrument readings with a Python and SQL pipeline into a central database
+  impact: Removed transcription errors from lab results and saved about 6 hours a week
+  impact_metric: 6 hours/week
+  visual_emphasis: false
+  signals:
+  - technical_depth
+  - delivery
+- id: ms_anomaly_detection
+  role_id: montague_street
+  description: Built statistical control charts to flag anomalous samples for review
+  impact: Caught contaminated batches earlier, avoiding re-runs on 3 major projects
+  impact_metric: 3 projects
+  visual_emphasis: false
+  signals:
+  - technical_depth
+- id: personal_meetup_talks
+  role_id: n/a
+  description: Gave talks at local data meetups on presenting uncertainty to non-technical audiences
+  impact: Invited back as a repeat speaker
+  impact_metric: repeat speaker
+  visual_emphasis: false
+  signals:
+  - influence

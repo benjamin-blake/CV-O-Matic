@@ -1,0 +1,77 @@
+# CV Configuration
+# Contains styling, formatting rules, color schemes, and content limits
+# Modify this file to adjust CV appearance and layout constraints
+
+# ============================================================================
+# DEFAULT CONFIGURATION
+# ============================================================================
+# Default color scheme - used when posting config doesn't specify one
+default_color_scheme: "rust"  # Variant B default
+
+# Layout configuration
+layout:
+  format: "two_column"  # Options: single_column, two_column
+  emphasis_level: 2  # 1-3: Controls visual prominence of achievements
+
+# ============================================================================
+# COLOR SCHEME DEFINITIONS
+# ============================================================================
+color_schemes:
+  tech_blue:
+    primary: "#004F90"      # Navy blue - main headings, name
+    secondary: "#0066CC"    # Medium blue - section titles
+    accent: "#00D9FF"       # Cyan - highlights, icons
+    text: "#2C3E50"         # Dark gray - body text
+    light: "#E8F4F8"        # Light blue - backgrounds
+    
+  fintech_green:
+    primary: "#00563F"      # Deep green
+    secondary: "#00AA5B"    # Medium green
+    accent: "#FFD700"       # Gold
+    text: "#2C3E50"
+    light: "#E8F5E9"
+    
+  creative_purple:
+    primary: "#6B2C91"      # Deep purple (current default)
+    secondary: "#9B59B6"    # Medium purple
+    accent: "#FF6B9D"       # Pink accent
+    text: "#2C3E50"
+    light: "#F3E5F5"
+    
+  corporate_navy:
+    primary: "#001F3F"      # Navy
+    secondary: "#003366"    # Medium navy
+    accent: "#DC143C"       # Crimson accent
+    text: "#2C3E50"
+    light: "#E8EAF6"
+    
+  rust:
+    primary: "#8b3a13"      # Warm rust
+    secondary: "#b35218"    # Lighter rust
+    accent: "#d4783a"       # Warm orange
+    text: "#2C3E50"
+    light: "#f6ebe3"         # Warm cream
+
+# ============================================================================
+# CONTENT LIMITS
+# ============================================================================
+# Character limits per section - tested to fit two-page layout with current font sizes
+# Page 1: Sidebar + Experience from all 3 roles (MUST fit on one page)
+# Page 2: Skills matrix (7 categories) + Essential criteria section
+content_limits:
+  summary_section: 600         # characters for sidebar summary
+  work_history_section: 2100   # characters for all experience highlights (allows 9-11 achievements across 3 roles)
+  education_section: 400       # characters for education section
+  skills_display_max: 8        # maximum skill categories to display (currently 7)
+  skills_cell_max: 100           # maximum characters per skills cell (expert/comfortable/familiar)
+  skills_category_max: 30        # maximum characters for category name
+  criteria_section_max: 1750   # maximum characters for essential criteria section on page 2
+
+# ============================================================================
+# OUTPUT FILE NAMING
+# ============================================================================
+# Templates for generated file names - uses {name_slug} placeholder derived from personal_info.name
+output_files:
+  html: "{name_slug}_cv.html"
+  pdf: "{name_slug}_cv.pdf"
+  css: "{name_slug}_cv_styles.css"

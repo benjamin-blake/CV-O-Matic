@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - {{ title }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ css_filename }}">
+</head>
+<body data-vb-page1="timeline" data-vb-page2="tag" data-voice="all-sans" data-density="tight">
+    <div class="vb-doc">
+        <!-- PAGE 1 -->
+        <div class="vb-page">
+            <div class="vb-watermark">CV prepared on {{ current_date }} for the role of {{ job_role }} at {{ company }}</div>
+
+            <header class="vb-header">
+                <div class="vb-header-left">
+                    <div class="vb-eyebrow">Curriculum Vitae</div>
+                    <h1 class="vb-name">{{ name }}</h1>
+                    <div class="vb-role-line">{{ title }}</div>
+                </div>
+                <div class="vb-header-right">
+                    <div class="vb-contact-row"><span class="vb-c-label">Email</span><span>{{ email }}</span></div>
+                    <div class="vb-contact-row"><span class="vb-c-label">Phone</span><span>{{ phone }}</span></div>
+                    <div class="vb-contact-row"><span class="vb-c-label">Based</span><span>{{ location }}</span></div>
+                    {%- if github %}
+                    <div class="vb-contact-row"><span class="vb-c-label">GitHub</span><span><a href="{{ github }}">{{ github }}</a></span></div>
+                    {%- endif %}
+                </div>
+            </header>
+
+            <div class="vb-rule-frame"><span class="vb-rule-mark">&sect;</span></div>
+
+            <div class="vb-body">
+                <aside class="vb-side">
+                    <section class="vb-side-section">
+                        <h2 class="vb-side-h">Profile</h2>
+                        <p class="vb-summary">{{ objective }}</p>
+                    </section>
+
+                    {% if relevant_projects %}
+                    <section class="vb-side-section">
+                        <h2 class="vb-side-h">Selected Projects</h2>
+                        <ul class="vb-projects">
+                            {% for project in relevant_projects %}
+                            <li>{{ project }}</li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                    {% endif %}
+
+                    <section class="vb-side-section">
+                        <h2 class="vb-side-h">Education</h2>
+                        {% for edu in education %}
+                        <div class="vb-edu">
+                            <div class="vb-edu-degree">{{ edu.degree }}</div>
+                            <div class="vb-edu-meta">{{ edu.institution }}</div>
+                            <div class="vb-edu-dates">{{ edu.date_range }}</div>
+                            {% if edu.highlights %}
+                            <ul class="vb-edu-h">
+                                {% for highlight in edu.highlights %}
+                                <li>{{ highlight }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </section>
+                </aside>
+
+                <main class="vb-main">
+                    <section>
+                        <h2 class="vb-main-h">Experience</h2>
+                        {% for role in experience %}
+                        <div class="vb-role">
+                            <div class="vb-role-meta">
+                                <span class="vb-role-dates">{{ role.date_range }}</span>
+                                <div class="vb-role-meta-company">{{ role.company }}</div>
+                                <div class="vb-role-meta-loc">{{ role.location }}</div>
+                            </div>
+                            <div class="vb-role-body">
+                                <h3 class="vb-role-title">{{ role.position }}</h3>
+                                <div class="vb-role-company">
+                                    <span class="vb-rc-name">{{ role.company }}</span>, {{ role.location }}
+                                    <span class="vb-rc-dates"> &middot; {{ role.date_range }}</span>
+                                </div>
+                                <ul class="vb-bullets">
+                                    {% for highlight in role.highlights %}
+                                    {% if highlight.startswith('<strong>') %}
+                                    <li class="vb-diff">{{ highlight | safe }}</li>
+                                    {% else %}
+                                    <li>{{ highlight | safe }}</li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div class="vb-page">
+            <header class="vb-page2-head">
+                <div class="vb-page2-name">{{ name }} <span class="vb-page2-sep">/</span> <em>{{ title }}</em></div>
+                <div class="vb-page2-pg">II</div>
+            </header>
+
+            <section class="vb-p2-section">
+                <h2 class="vb-main-h">Skills Matrix</h2>
+                <div class="vb-skills">
+                    <div class="vb-skill-head">
+                        <div></div>
+                        <div>Expert</div>
+                        <div>Comfortable</div>
+                        <div>Familiar</div>
+                    </div>
+                    {% for category in skills_matrix %}
+                    <div class="vb-skill-row">
+                        <div class="vb-skill-cat">{{ category.category }}</div>
+                        <div>{{ category.expert | safe }}</div>
+                        <div>{{ category.comfortable | safe }}</div>
+                        <div>{% if category.familiar %}{{ category.familiar | safe }}{% else %}<span class="vb-empty">&mdash;</span>{% endif %}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            {% if essential_criteria %}
+            <div class="vb-rule-frame"><span class="vb-rule-mark">&sect;</span></div>
+            <section class="vb-p2-section">
+                <h2 class="vb-main-h">Essential Criteria</h2>
+                <div class="vb-criteria">
+                    {% for item in essential_criteria %}
+                    <div class="vb-criterion">
+                        <div class="vb-criterion-head">
+                            <span class="vb-tick" aria-hidden>&#10003;</span>
+                            <span class="vb-c-text">{{ item.criterion }}</span>
+                        </div>
+                        <div class="vb-criterion-resp">
+                            <span class="vb-resp-label">Response</span>
+                            <span class="vb-resp-text">{{ item.response }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

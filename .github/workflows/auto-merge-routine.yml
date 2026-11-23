@@ -1,0 +1,132 @@
+name: Auto-merge routine PRs
+
+# Auto-merges PRs opened by the /scan-indeed and /scan-companies routines when the
+# diff is constrained to the routines' expected output paths. Anything outside
+# that scope falls through to manual review.
+#
+# Allowed paths:
+#   - postings/**
+#   - applications.yaml              (root state spine; updated by every scan run)
+#   - config/company_watchlist.yaml  (state field only - see CLAUDE.md)
+#
+# Trigger: PRs whose head branch starts with `claude/` (the prefix the Claude
+# Code routine uses for its own branches) AND which come from this same
+# repository (never forks).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Serialise routine auto-merges so two scheduled PRs do not try to update the
+# shared state files at the same time. Without this, concurrent scan/check-email
+# PRs can both be individually valid but the second one becomes stale as soon as
+# the first squash-merge lands on main.
+concurrency:
+  group: routine-auto-merge-main
+  cancel-in-progress: false
+
+jobs:
+  scope-check:
+    # Same-repo PRs only: a fork PR named claude/* must never be auto-merged.
+    if: >-
+      startsWith(github.head_ref, 'claude/') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write   # required for `gh workflow run sync-drive.yml` after merge
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Inspect PR diff
+        id: scope
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -e
+          files=$(gh pr diff "$PR_NUMBER" --name-only)
+          echo "Files in PR:"
+          echo "$files"
+          out_of_scope=$(echo "$files" | grep -v -E '^(postings/|applications\.yaml$|config/company_watchlist\.yaml$)' || true)
+          if [ -n "$out_of_scope" ]; then
+            echo "in_scope=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "out_of_scope_files<<EOF"
+              echo "$out_of_scope"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "in_scope=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Block - out of scope
+        if: steps.scope.outputs.in_scope == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          FILES: ${{ steps.scope.outputs.out_of_scope_files }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body "Auto-merge declined: this PR touches files outside the routine's allowed scope (\`postings/**\`, \`applications.yaml\`, \`config/company_watchlist.yaml\`).
+
+          Out-of-scope files:
+          \`\`\`
+          $FILES
+          \`\`\`
+
+          Falling through to manual review."
+          exit 1
+
+      # Note: GitHub Actions' default GITHUB_TOKEN cannot approve PRs (GitHub blocks
+      # this to prevent self-approval loops), so we don't `gh pr review --approve`.
+      # The merge goes through without approval because main has no branch protection
+      # requiring one. If you ever add branch protection requiring approvals, you'd
+      # need to either (a) use a PAT or GitHub App token here, or (b) approve the PR
+      # manually from a different identity. For now: comment + merge.
+      - name: Rebase routine branch on latest main
+        if: steps.scope.outputs.in_scope == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          gh pr checkout "$PR_NUMBER"
+          git fetch origin main
+          if ! git rebase origin/main; then
+            git rebase --abort || true
+            gh pr comment "$PR_NUMBER" --body "Auto-merge paused: this routine branch could not be rebased onto latest \`main\` without conflicts. This usually means another routine changed the same \`applications.yaml\` entries or watchlist state first; please resolve manually, then push the branch to re-run auto-merge."
+            exit 1
+          fi
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Unexpected dirty tree after rebase"
+            git status --short
+            exit 1
+          fi
+          git push --force-with-lease origin "HEAD:$HEAD_BRANCH"
+
+      - name: Comment and merge
+        if: steps.scope.outputs.in_scope == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh pr comment "$PR_NUMBER" --body "Scope check passed and branch rebased onto latest \`main\` - only \`postings/**\`, \`applications.yaml\`, and/or \`config/company_watchlist.yaml\` touched. Auto-merging."
+          gh pr merge "$PR_NUMBER" --squash --delete-branch
+
+      # Pushes triggered by GITHUB_TOKEN do NOT cascade to other workflows (GitHub
+      # safeguard against workflow loops). That means the squash-merge above will
+      # NOT auto-trigger sync-drive.yml on its own. workflow_dispatch is one of
+      # the two documented exceptions, so we dispatch sync-drive explicitly here.
+      # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow
+      - name: Trigger Drive sync (workflow_dispatch bypasses the GITHUB_TOKEN cascade block)
+        if: steps.scope.outputs.in_scope == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run sync-drive.yml --ref main

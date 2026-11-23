@@ -1,0 +1,38 @@
+# CV tweak ledger - the memory behind /capture-cv-tweaks.
+#
+# Every time you hand-finish a CV (adopts different wording, trims a
+# section to fit the page, swaps an achievement, reorders, re-bands a skill),
+# /capture-cv-tweaks records the edit here as one entry. The ledger is what
+# distinguishes a one-off tweak from a recurring pattern: a pattern is only
+# promoted into build-cv.md guidance or a check_lengths.py check on its SECOND
+# appearance across different postings (the two-strike rule). The first
+# appearance lands here as `observed`; the second flips it to `rule_added`.
+#
+# Entry shape (append one mapping per captured edit):
+#   - date: "YYYY-MM-DD"          # UTC date the capture ran
+#     slug: "<posting slug>"      # which CV the edit came from
+#     pattern: <class>            # one of the pattern classes below
+#     detail: "..."               # what changed, concretely (from/to, section, magnitude)
+#     reason: "..."               # WHY you made the change (your rationale, in your words)
+#     action: <rule_added|observed|engine_blocked>
+#
+# pattern classes:
+#   length_reduction   - a section was trimmed to fit the page (which section, roughly how much)
+#   wording_substitution - a phrase was swapped (record the from -> to pair)
+#   achievement_swap   - a selected achievement was replaced with another
+#   ordering_change    - highlights or sections reordered
+#   skills_band_change - a skill moved tier (expert/comfortable/familiar) or bold changed
+#   other              - anything that does not fit the classes above
+#
+# action values:
+#   observed       - first sighting; recorded, no rule promoted yet
+#   rule_added     - second sighting of this pattern; promoted to build-cv.md and/or check_lengths.py
+#   engine_blocked - the fix genuinely needs generate_cv.py / template / stylesheet changes
+#                    (What NOT to touch); surfaced to you instead of auto-applied
+#
+# `reason` is the field that answers "why did I want this?" - it persists the
+# thinking behind each request so the eventual promoted rule carries its
+# justification, not just its mechanics.
+
+
+entries: []

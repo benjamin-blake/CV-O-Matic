@@ -1,0 +1,204 @@
+# Job requirements - the single source of truth for discovery and scoring.
+# Read by /scan-indeed, /scan-companies, the job-matcher subagent,
+# models/rescore.py and models/comp.py.
+#
+# >>> EXAMPLE PROFILE <<<
+# The values below belong to a fictional example candidate. Run /onboard in
+# Claude Code to replace them with your own; it walks through every section.
+
+profile:
+  # Guard flag. While true, /build-cv, the scan routines and /check-email stop
+  # and point you at /onboard, so a CV is never built from example data.
+  # /onboard sets this to false once your own details are in place.
+  is_example_profile: true
+  # Name, contact details and roles live in cv/cv_core_data.yaml; do not repeat them here.
+  current_role: Analytics Manager
+  location: London, UK
+  uk_citizen_or_settled: true
+
+# Roles to search for, in rough priority order.
+target_roles:
+  - Analytics Manager
+  - Senior Data Analyst
+  - Lead Data Analyst
+  - Analytics Engineer
+  - Data Product Manager
+  - Head of Analytics
+  - Head of Data
+  - Data Science Manager
+
+seniority:
+  min: senior
+  max: head
+
+location:
+  primary: London, UK
+  remote_ok: true
+  hybrid_ok: true
+  onsite_ok: false
+  acceptable_uk_cities:  # outside the primary city, office attendance must be minimal
+    - Manchester
+    - Bristol
+    - Edinburgh
+  office_days:
+    # Only explicit REQUIRED attendance triggers these; "flexible" or
+    # "typically" wording is not penalised.
+    primary_max_per_week: 3
+    primary_penalty_at: 3
+    outside_primary_max_per_month: 2
+  international: false
+
+compensation:
+  # Example figures for a senior analytics manager in London.
+  base_salary_min_gbp: 65000
+  base_salary_target_gbp: 80000
+  base_salary_stretch_gbp: 95000
+  # US-headquartered firms often quote USD; convert at the current rate when comparing.
+  # Sector-specific floor overrides. The base floor assumes a private-sector
+  # package. Where pension / leave / job security materially offset a lower
+  # base, the floor is relaxed. job-matcher detects the sector from the posting
+  # and applies the override before scoring compensation_fit or checking the
+  # salary deal-breaker.
+  sector_floor_overrides:
+    uk_civil_service:
+      base_salary_min_gbp: 50000
+      base_salary_target_gbp: 62000
+      base_salary_stretch_gbp: 75000
+      rationale: >-
+        Civil Service Pension at ~28.97% employer contribution is worth
+        roughly £15-20k of additional total comp vs a private-sector
+        equivalent. Combined with 25-30 days leave, learning days and
+        strong job security, a lower base is acceptable. Detection signals
+        in the posting: "Civil Service Pension", "Success Profiles",
+        "Civil Service Behaviours", nationality requirements, or a
+        central-government employer (GDS, DSIT, Defra, Cabinet Office,
+        DfE, DWP, HMRC, MoJ, Home Office, UKHSA, MOD, etc.).
+
+# Hard requirements - every must_have should be evidenced in the posting.
+must_have:
+  - SQL used daily
+  - A BI tool (Power BI, Tableau, Looker or equivalent)
+  - Stakeholder-facing analysis, not pure report production
+  - A modern cloud data platform (Snowflake, BigQuery, Redshift or equivalent)
+
+# Strongly preferred - boosts the score but absence isn't disqualifying.
+strong_preference:
+  - Mission-driven organisation (public sector, health, sustainability, public good)
+  - Line management or team-lead scope
+  - Hands-on analysis alongside management (player-coach)
+  - Data quality and governance ownership
+  - dbt or another tested transformation framework
+
+deal_breakers:
+  - Adtech
+  - Gambling
+  - Weapons / defence
+  - Pure on-site 5 days/week
+  - Required office attendance above location.office_days thresholds
+  - Base salary below £60k (subject to sector floor overrides - see compensation.sector_floor_overrides)
+  - Heavy on-call without compensation
+  - Crypto / web3 speculative
+
+scoring:
+  # Weighted sum across job-matcher dimensions. Must sum to 1.0.
+  weights:
+    must_have_coverage: 0.40
+    strong_preference_coverage: 0.25
+    seniority_fit: 0.15
+    mission_alignment: 0.10
+    compensation_fit: 0.10
+
+  # Seniority is a PROXY for role substance, and it matters most when salary is
+  # unknown. When the posting STATES a salary, defer to it: a well-paid role is
+  # substantive regardless of the title. job-matcher applies this to
+  # seniority_fit after detecting salary.
+  seniority_salary_override:
+    # Representative salary = range midpoint, or the single stated figure.
+    # Compared against the sector-adjusted target / floor. Only applied when
+    # salary is stated; otherwise seniority_fit falls back to the title.
+    at_or_above_target: 1.0
+    between_floor_and_target: 0.75
+    # Below floor: fall through to title-based seniority_fit and the salary deal-breaker.
+
+  # Role families. Each family is detected by case-insensitive title fragments.
+  # When a title matches more than one family, the FIRST family listed in
+  # family_precedence wins. Keys are short aliases (used by
+  # `/rescore-application --family <key>`); rename or add families freely.
+  #
+  # Per-family options:
+  #   title_fragments         list of lowercase fragments; any one triggers the family
+  #   must_have_evaluation    capability_based: judge "could the candidate credibly
+  #                           do / advise on this stack", so a JD that does not name a
+  #                           tool is not evidence it is unused (no 0.4 cap).
+  #                           literal: only credit must-haves the JD names AND the
+  #                           achievement library evidences.
+  #   lift_must_haves_to_full true: rescore treats a genuine match as covering every
+  #                           must-have (use for your proven core trajectory only)
+  #   score_modifier          added to the final score (a small tilt, e.g. +0.05 / -0.10)
+  #   cap_verdict_below       hold the verdict below this level (e.g. STRONG)
+  #   treat_architecture_focus_as  positive: strategy / standards / governance framing
+  #                           is the expected shape of the role, not a mismatch
+  family_precedence: [stretch, core, leadership]
+
+  role_family_modifiers:
+    # Proven trajectory: hands-on analytics. Deep, directly relevant experience.
+    core:
+      title_fragments:
+        - data analyst
+        - analytics engineer
+        - analytics manager
+        - insight
+      must_have_evaluation: capability_based
+      lift_must_haves_to_full: true
+      score_modifier: 0.05
+
+    # Aspirational pivot: data science / ML. Genuine interest, thinner evidence,
+    # so judge must-haves literally, discount, and cap below STRONG.
+    stretch:
+      title_fragments:
+        - data scientist
+        - machine learning
+        - ml engineer
+      must_have_evaluation: literal
+      score_modifier: -0.10
+      cap_verdict_below: STRONG
+
+    # Leadership titles describe outcomes, not daily tools. Judge on capability
+    # and treat strategy / governance framing as expected.
+    leadership:
+      title_fragments:
+        - head of
+        - lead
+        - principal
+        - director
+      must_have_evaluation: capability_based
+      treat_architecture_focus_as: positive
+
+# Contract preferences. Permanent roles remain the primary track. Detect
+# contracts by day rate, "outside IR35" / "inside IR35", fixed-term duration,
+# or "contract" in the title. Comparable annual figure is
+# day_rate x annualisation_working_days.
+contracting:
+  enabled: false
+  day_rate_min_gbp: 450
+  day_rate_target_gbp: 550
+  ir35: outside_preferred_inside_requires_uplift
+  min_duration_months: 6
+  available_from: null            # YYYY-MM-DD, or null if available now
+  annualisation_working_days: 220
+
+# Discovery preferences. Scan routines never build CVs; run /build-cv {slug}
+# manually for postings worth applying to.
+discovery:
+  freshness_days: 7             # ignore postings older than this
+  max_candidates_per_run: 20    # cap matcher invocations per scan routine run
+
+# Stylistic conventions for generated text.
+style:
+  language: en-GB
+  avoid:
+    - em-dashes              # read as LLM-generated to UK reviewers
+    - American spellings     # analyse not analyze, colour not color, etc.
+    - first-person plural    # "we delivered" -> "delivered"
+    - filler verbs           # leveraging, utilising, facilitated
+  date_format: YYYY Month DD

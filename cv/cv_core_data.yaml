@@ -1,0 +1,107 @@
+# Core CV data - personal information, summary, skills matrix, roles, education.
+#
+# >>> EXAMPLE PROFILE <<<
+# Everything in this file belongs to a fictional example candidate (Sherlock
+# Holmes, a public-domain character) so the template works out of the box.
+# Run /onboard in Claude Code to replace it with your own details. While
+# config/job_seeker.yaml -> profile.is_example_profile is true, the CV and
+# discovery commands refuse to run against real postings.
+#
+# This file is the single source of truth for who you are. Your name here also
+# sets the generated CV file names ({first}_{last}_cv.pdf).
+
+# ============================================================================
+# PERSONAL INFORMATION
+# ============================================================================
+personal_info:
+  name: "Sherlock Holmes"
+  title: "Analytics Manager"
+  location: "London, UK"
+  phone: "+44 20 7946 0221"          # Ofcom drama range: never a real number
+  email: "sherlock.holmes@example.com"
+  github: ""                         # optional; leave empty to hide the row
+  # UK practice is to leave date of birth off a CV (age-discrimination risk).
+  # Leave these empty unless a specific application asks for them.
+  birth_date: ""
+  nationality: ""
+
+# ============================================================================
+# PROFESSIONAL SUMMARY (default; /build-cv writes a bespoke one per posting)
+# ============================================================================
+summary:
+  title: "Analytics Manager"
+  statement: >
+    Analytics manager who turns messy, incomplete evidence into decisions people
+    can act on. Leads small analytics teams, builds the reporting and data
+    quality foundations underneath them, and translates findings for
+    non-technical stakeholders without losing the nuance.
+
+# ============================================================================
+# SKILLS MATRIX
+# ============================================================================
+# Three honest tiers. /build-cv never upgrades a tier without evidence in the
+# achievement library, and never downgrades one to fit a posting.
+skills_matrix:
+  - category: Languages
+    expert: SQL
+    comfortable: Python
+    familiar: R
+
+  - category: BI & Visualisation
+    expert: Power BI, Tableau
+    comfortable: Looker
+    familiar: ""
+
+  - category: Data Platforms
+    expert: Snowflake
+    comfortable: BigQuery, PostgreSQL
+    familiar: Databricks
+
+  - category: Transformation & Quality
+    expert: dbt Core
+    comfortable: Great Expectations
+    familiar: Airflow
+
+  - category: Ways of Working
+    expert: Jira, Confluence
+    comfortable: Git, GitHub
+    familiar: ""
+
+# ============================================================================
+# ROLES - list NEWEST FIRST. This order is the CV's reverse-chronological
+# order; /build-cv and cv-reviewer read it from here.
+# ============================================================================
+roles:
+  - id: baker_street
+    company: "Baker Street Analytics"
+    position: "Analytics Manager"
+    location: "London, UK"
+    start_date: "Jan 2024"
+    end_date: "present"
+
+  - id: diogenes_club
+    company: "The Diogenes Club"
+    position: "Senior Data Analyst"
+    location: "London, UK"
+    start_date: "Mar 2021"
+    end_date: "Dec 2023"
+
+  - id: montague_street
+    company: "Montague Street Laboratory"
+    position: "Data Analyst"
+    location: "London, UK"
+    start_date: "Sep 2018"
+    end_date: "Feb 2021"
+
+# ============================================================================
+# EDUCATION
+# ============================================================================
+education:
+  - institution: "Example University"
+    degree: "BSc Chemistry"
+    area: "Chemistry"
+    classification: "Upper Second Class Honours"
+    start_date: "Sept 2015"
+    end_date: "June 2018"
+    highlights:
+      - "Dissertation on statistical methods for trace-evidence analysis"

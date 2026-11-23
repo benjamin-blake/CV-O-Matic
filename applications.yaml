@@ -1,0 +1,9 @@
+# applications.yaml - canonical state spine for job-seeker.
+# One entry per posting, keyed by slug. Edit directly (or ask Claude Code) to
+# flip status: open / applied / declined / closed / rejected.
+# Scan routines append entries via models.applications_index.upsert.
+# Detailed per-posting analysis lives in postings/{slug}/application_review.json.
+
+metadata:
+  schema_version: 1
+applications: []

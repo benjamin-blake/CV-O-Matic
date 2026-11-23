@@ -1,0 +1,632 @@
+/* ============================================================================
+   CV Styles - Variant B (Quiet Grid) with locked design:
+   page1=timeline, page2=tag, palette=rust, voice=all-sans, density=tight
+   ============================================================================ */
+
+/* CSS Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* A4 Page Configuration */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Color Variables - generate_css_from_scheme replaces these hex values */
+:root {
+  --primary-purple: #6B2C91;
+  --secondary-purple: #9B59B6;
+  --accent-pink: #FF6B9D;
+  --text-dark: #2C3E50;
+  --text-light: #5A6C7D;
+  --light-purple: #E8EAF0;
+  --white: #FFFFFF;
+}
+
+/* ============================================================================
+   Base - .vb-doc
+   Re-maps --vb-accent and --vb-ink to the color_scheme tokens so
+   generate_css_from_scheme keeps working without changes.
+   ============================================================================ */
+.vb-doc {
+  --vb-ink: var(--text-dark);
+  --vb-text: #2a2e33;
+  --vb-mute: #6e7378;
+  --vb-rule: #d4d6d3;
+  --vb-rule-soft: #ebece9;
+  --vb-accent: var(--primary-purple);
+  --vb-accent-soft: var(--light-purple);
+  --vb-paper: #fbfaf6;
+  --vb-side-bg: #f3f1ea;
+
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  color: var(--vb-text);
+  font-size: 10pt;
+  line-height: 1.45;
+  background: white;
+  font-feature-settings: "kern", "liga", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================================
+   Page frame
+   ============================================================================ */
+.vb-doc .vb-page {
+  width: 210mm;
+  height: 297mm;
+  background: var(--vb-paper);
+  padding: 16mm 16mm 14mm;
+  position: relative;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow: hidden;
+  page-break-after: always;
+}
+.vb-doc .vb-page:last-child { page-break-after: auto; }
+.vb-doc .vb-page + .vb-page { margin-top: 12mm; }
+
+/* Watermark */
+.vb-doc .vb-watermark {
+  position: absolute;
+  top: 7mm;
+  left: 16mm;
+  right: 16mm;
+  font-family: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 7pt;
+  letter-spacing: 0.04em;
+  color: var(--vb-mute);
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 0.5px dotted var(--vb-rule);
+  padding-bottom: 1.5mm;
+}
+
+/* ============================================================================
+   Header
+   ============================================================================ */
+.vb-doc .vb-header {
+  margin-top: 6mm;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10mm;
+  align-items: end;
+}
+.vb-doc .vb-eyebrow {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vb-accent);
+  margin-bottom: 3mm;
+}
+.vb-doc .vb-name {
+  font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  font-weight: 400;
+  font-size: 38pt;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--vb-ink);
+  margin: 0;
+}
+.vb-doc .vb-role-line {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-size: 13pt;
+  color: var(--vb-mute);
+  margin-top: 2.5mm;
+}
+
+.vb-doc .vb-header-right {
+  display: grid;
+  grid-template-columns: 14mm 1fr;
+  column-gap: 3mm;
+  row-gap: 1.2mm;
+  align-items: baseline;
+  align-content: end;
+  font-size: 9pt;
+  padding-bottom: 2mm;
+}
+.vb-doc .vb-contact-row { display: contents; }
+.vb-doc .vb-contact-row > * {
+  border-bottom: 0.5px dotted var(--vb-rule);
+  padding-bottom: 1.2mm;
+}
+.vb-doc .vb-contact-row:last-child > * { border-bottom: 0; }
+/* Prevent Chromium PDF from eating trailing hyphens when URLs wrap. */
+.vb-doc .vb-contact-row > span:nth-child(2) {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+  hyphens: none;
+}
+.vb-doc .vb-c-label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 6.8pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vb-mute);
+}
+
+/* ============================================================================
+   Marked rule
+   ============================================================================ */
+.vb-doc .vb-rule-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 6mm 0 6mm;
+  position: relative;
+}
+.vb-doc .vb-rule-frame::before,
+.vb-doc .vb-rule-frame::after {
+  content: "";
+  flex: 1;
+  height: 0.5px;
+  background: var(--vb-ink);
+}
+.vb-doc .vb-rule-mark {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 11pt;
+  color: var(--vb-accent);
+  margin: 0 4mm;
+  line-height: 1;
+}
+
+/* ============================================================================
+   Body grid
+   ============================================================================ */
+.vb-doc .vb-body {
+  display: grid;
+  grid-template-columns: 56mm 1fr;
+  gap: 8mm;
+}
+
+/* ============================================================================
+   Sidebar
+   ============================================================================ */
+.vb-doc .vb-side {
+  background: var(--vb-side-bg);
+  padding: 5mm 5mm;
+  border-radius: 0;
+  border-top: 1px solid var(--vb-ink);
+  border-bottom: 1px solid var(--vb-ink);
+}
+.vb-doc .vb-side-section { margin-bottom: 5mm; }
+.vb-doc .vb-side-section:last-child { margin-bottom: 0; }
+.vb-doc .vb-side-h {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vb-accent);
+  margin: 0 0 2.5mm;
+  font-weight: 600;
+  border-bottom: 0.5px solid var(--vb-rule);
+  padding-bottom: 1mm;
+}
+.vb-doc .vb-summary {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 9.5pt;
+  line-height: 1.5;
+  color: var(--vb-ink);
+  text-wrap: pretty;
+}
+.vb-doc .vb-projects {
+  list-style: none; padding: 0; margin: 0;
+}
+.vb-doc .vb-projects li {
+  position: relative;
+  padding-left: 4mm;
+  font-size: 9pt;
+  line-height: 1.4;
+  margin-bottom: 1.5mm;
+}
+.vb-doc .vb-projects li::before {
+  content: "\2014";
+  position: absolute;
+  left: 0;
+  color: var(--vb-accent);
+}
+
+.vb-doc .vb-edu-degree {
+  font-weight: 600;
+  font-size: 9.5pt;
+  color: var(--vb-ink);
+}
+.vb-doc .vb-edu-meta {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-size: 9pt;
+  color: var(--vb-text);
+  margin-top: 0.5mm;
+}
+.vb-doc .vb-edu-dates {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7.5pt;
+  color: var(--vb-mute);
+  margin-top: 0.5mm;
+}
+.vb-doc .vb-edu-h {
+  list-style: none;
+  padding: 0;
+  margin: 1.5mm 0 0;
+}
+.vb-doc .vb-edu-h li {
+  font-size: 9pt;
+  line-height: 1.4;
+  padding-left: 4mm;
+  position: relative;
+  margin-bottom: 1mm;
+}
+.vb-doc .vb-edu-h li::before {
+  content: "\00B7"; position: absolute; left: 1mm;
+  color: var(--vb-mute); font-weight: 700;
+}
+
+/* ============================================================================
+   Main content
+   ============================================================================ */
+.vb-doc .vb-main-h {
+  font-family: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 14pt;
+  color: var(--vb-ink);
+  margin: 0 0 4mm;
+  letter-spacing: 0;
+}
+
+.vb-doc .vb-role {
+  display: grid;
+  grid-template-columns: 26mm 1fr;
+  gap: 5mm;
+  padding-bottom: 4mm;
+  margin-bottom: 4mm;
+  border-bottom: 0.5px dotted var(--vb-rule);
+  page-break-inside: avoid;
+}
+.vb-doc .vb-role:last-child { border-bottom: 0; padding-bottom: 0; margin-bottom: 0; }
+
+.vb-doc .vb-role-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+}
+.vb-doc .vb-role-dates {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7.5pt;
+  letter-spacing: 0.04em;
+  color: var(--vb-mute);
+  text-transform: uppercase;
+  display: block;
+  padding-top: 1.2mm;
+  border-top: 1px solid var(--vb-ink);
+  width: 100%;
+}
+.vb-doc .vb-role-meta-company,
+.vb-doc .vb-role-meta-loc { display: none; }
+.vb-doc .vb-role-title {
+  font-weight: 600;
+  font-size: 11pt;
+  color: var(--vb-ink);
+  margin: 0;
+  letter-spacing: 0;
+}
+.vb-doc .vb-role-company {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-size: 9.5pt;
+  color: var(--vb-text);
+  margin: 0.5mm 0 1.5mm;
+}
+.vb-doc .vb-rc-dates { display: none; }
+
+/* ============================================================================
+   Bullets
+   ============================================================================ */
+.vb-doc .vb-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 1.5mm 0 0;
+}
+.vb-doc .vb-bullets li {
+  position: relative;
+  padding-left: 4.5mm;
+  margin-bottom: 1.2mm;
+  font-size: 9.5pt;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.vb-doc .vb-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 2.5mm;
+  height: 0.5px;
+  background: var(--vb-text);
+}
+.vb-doc .vb-bullets li.vb-diff {
+  background: var(--vb-accent-soft);
+  border-left: 1.5px solid var(--vb-accent);
+  padding: 1mm 2mm 1mm 4.5mm;
+  margin-left: -2mm;
+}
+.vb-doc .vb-bullets li.vb-diff::before {
+  background: var(--vb-accent); left: 1.5mm;
+}
+
+/* Primary tool highlighting in skills and bullets */
+.vb-doc .vb-bullets li strong,
+.vb-doc .vb-skills strong { color: var(--vb-accent); font-weight: 600; }
+
+/* ============================================================================
+   Page 2 header
+   ============================================================================ */
+.vb-doc .vb-page2-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 6mm;
+}
+.vb-doc .vb-page2-name {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 14pt;
+  color: var(--vb-ink);
+}
+.vb-doc .vb-page2-sep { color: var(--vb-mute); margin: 0 2mm; }
+.vb-doc .vb-page2-pg {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9pt;
+  color: var(--vb-mute);
+  letter-spacing: 0.1em;
+}
+
+.vb-doc .vb-p2-section { margin-bottom: 7mm; }
+.vb-doc .vb-p2-section:last-child { margin-bottom: 0; }
+
+/* ============================================================================
+   Skills
+   ============================================================================ */
+.vb-doc .vb-skills {
+  font-size: 9pt;
+  line-height: 1.45;
+}
+.vb-doc .vb-skill-head {
+  display: grid;
+  grid-template-columns: 44mm 1fr 1fr 1fr;
+  gap: 5mm;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 7pt;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--vb-mute);
+  padding: 0 0 1.2mm 0;
+  border-bottom: 1px solid var(--vb-ink);
+}
+.vb-doc .vb-skill-row {
+  display: grid;
+  grid-template-columns: 44mm 1fr 1fr 1fr;
+  gap: 5mm;
+  padding: 2.2mm 0;
+  border-bottom: 0.5px dotted var(--vb-rule);
+}
+.vb-doc .vb-skill-row:last-child { border-bottom: 0; }
+.vb-doc .vb-skill-cat {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-size: 10pt;
+  color: var(--vb-ink);
+}
+.vb-doc .vb-empty { color: var(--vb-rule); }
+
+/* ============================================================================
+   Criteria - base (boxed)
+   ============================================================================ */
+.vb-doc .vb-criteria {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 8mm;
+}
+.vb-doc .vb-criterion {
+  padding: 2mm 0 2mm;
+  border-top: 0.5px dotted var(--vb-rule);
+  break-inside: avoid;
+}
+.vb-doc .vb-criterion:nth-child(-n+2) { border-top: 0; padding-top: 0.5mm; }
+.vb-doc .vb-criterion-head {
+  display: flex;
+  align-items: baseline;
+  gap: 2mm;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-style: italic;
+  font-size: 9.5pt;
+  color: var(--vb-ink);
+  margin-bottom: 0.8mm;
+  text-wrap: pretty;
+}
+.vb-doc .vb-tick {
+  width: 4mm; height: 4mm;
+  border-radius: 50%;
+  background: var(--vb-accent);
+  color: white;
+  font-size: 7pt;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.vb-doc .vb-c-text { flex: 1; }
+.vb-doc .vb-criterion-resp {
+  font-size: 9pt;
+  line-height: 1.4;
+  color: var(--vb-text);
+  margin-left: 6mm;
+}
+.vb-doc .vb-resp-label { display: none; }
+
+/* ============================================================================
+   LOCKED: page1 = timeline
+   ============================================================================ */
+body[data-vb-page1="timeline"] .vb-doc .vb-body { grid-template-columns: 48mm 1fr; gap: 6mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-side { padding: 4mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-side-h { font-size: 7pt; margin-bottom: 1.5mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-summary { font-size: 8.5pt; line-height: 1.35; }
+body[data-vb-page1="timeline"] .vb-doc .vb-projects li { font-size: 8pt; line-height: 1.3; padding: 0.8mm 0 0.8mm 3.5mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-edu-degree { font-size: 8.75pt; }
+body[data-vb-page1="timeline"] .vb-doc .vb-edu-meta,
+body[data-vb-page1="timeline"] .vb-doc .vb-edu-dates { font-size: 7.75pt; }
+body[data-vb-page1="timeline"] .vb-doc .vb-edu-h li { font-size: 8pt; line-height: 1.3; }
+body[data-vb-page1="timeline"] .vb-doc .vb-side-section { margin-bottom: 3.5mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-main { position: relative; }
+body[data-vb-page1="timeline"] .vb-doc .vb-bullets li { font-size: 8.75pt; line-height: 1.38; margin-bottom: 0.8mm; }
+body[data-vb-page1="timeline"] .vb-doc .vb-role {
+  grid-template-columns: 16mm 1fr;
+  gap: 3mm;
+  position: relative;
+  padding-bottom: 2mm;
+  margin-bottom: 2mm;
+  border-bottom: 0;
+  align-items: start;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-meta {
+  position: relative;
+  padding-left: 4mm;
+  align-self: start;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-meta::after {
+  content: "";
+  position: absolute;
+  left: 14mm;
+  top: 1.5mm;
+  width: 2mm;
+  height: 2mm;
+  border: 1px solid var(--vb-accent);
+  background: var(--vb-paper);
+  border-radius: 50%;
+  z-index: 2;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-body {
+  position: relative;
+  padding-left: 4mm;
+  margin-left: -4mm;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role::before {
+  content: "";
+  position: absolute;
+  left: 15mm;
+  top: 0;
+  bottom: -2mm;
+  width: 0;
+  border-left: 0.5px solid var(--vb-rule);
+  z-index: 0;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role:last-child::before { bottom: 0; }
+body[data-vb-page1="timeline"] .vb-doc .vb-role-dates {
+  border-top: 0;
+  padding-top: 0;
+  font-weight: 500;
+  font-size: 7.25pt;
+  color: var(--vb-ink);
+  letter-spacing: 0.04em;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-meta-company,
+body[data-vb-page1="timeline"] .vb-doc .vb-role-meta-loc { display: none; }
+body[data-vb-page1="timeline"] .vb-doc .vb-role-title {
+  font-size: 11pt;
+  margin-bottom: 0.5mm;
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-company {
+  display: block;
+  font-size: 9.25pt;
+  margin: 0 0 1.5mm;
+  color: var(--vb-text);
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-role-company .vb-rc-name {
+  font-style: italic;
+  color: var(--vb-ink);
+}
+body[data-vb-page1="timeline"] .vb-doc .vb-bullets li { margin-bottom: 1mm; }
+
+/* ============================================================================
+   LOCKED: page2 = tag
+   ============================================================================ */
+body[data-vb-page2="tag"] .vb-doc .vb-criterion {
+  border-top: 0;
+  padding: 0 0 2mm;
+  margin-bottom: 2mm;
+  border-bottom: 0.5px solid var(--vb-rule-soft);
+}
+body[data-vb-page2="tag"] .vb-doc .vb-criterion:nth-child(-n+2) { padding-top: 0; }
+body[data-vb-page2="tag"] .vb-doc .vb-criterion-head {
+  font-family: "JetBrains Mono", monospace;
+  font-style: normal;
+  font-size: 7.5pt;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vb-accent);
+  font-weight: 600;
+  margin-bottom: 1.2mm;
+  align-items: center;
+  gap: 2mm;
+}
+body[data-vb-page2="tag"] .vb-doc .vb-criterion-head .vb-tick {
+  width: 3mm; height: 3mm; font-size: 6pt;
+}
+body[data-vb-page2="tag"] .vb-doc .vb-criterion-resp {
+  font-family: "Inter", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: 8.75pt;
+  line-height: 1.38;
+  color: var(--vb-text);
+  margin-left: 5mm;
+}
+
+/* ============================================================================
+   LOCKED: voice = all-sans
+   ============================================================================ */
+body[data-voice="all-sans"] .vb-doc {
+  font-family: "Inter", -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+body[data-voice="all-sans"] .vb-doc .vb-name,
+body[data-voice="all-sans"] .vb-doc .vb-role-line,
+body[data-voice="all-sans"] .vb-doc .vb-summary,
+body[data-voice="all-sans"] .vb-doc .vb-main-h,
+body[data-voice="all-sans"] .vb-doc .vb-role-company,
+body[data-voice="all-sans"] .vb-doc .vb-edu-meta,
+body[data-voice="all-sans"] .vb-doc .vb-skill-cat,
+body[data-voice="all-sans"] .vb-doc .vb-criterion-head,
+body[data-voice="all-sans"] .vb-doc .vb-page2-name {
+  font-family: "Inter", sans-serif;
+  font-style: normal;
+}
+body[data-voice="all-sans"] .vb-doc .vb-name { font-weight: 300; letter-spacing: -0.025em; }
+body[data-voice="all-sans"] .vb-doc .vb-main-h { font-weight: 600; font-size: 11pt; text-transform: uppercase; letter-spacing: 0.12em; }
+
+/* ============================================================================
+   LOCKED: density = tight
+   ============================================================================ */
+body[data-density="tight"] .vb-doc { font-size: 9.5pt; line-height: 1.38; }
+body[data-density="tight"] .vb-doc .vb-name { font-size: 32pt; }
+body[data-density="tight"] .vb-doc .vb-page { padding: 12mm 14mm 10mm; }
+body[data-density="tight"] .vb-doc .vb-bullets li { margin-bottom: 0.8mm; }
+body[data-density="tight"] .vb-doc .vb-role { padding-bottom: 3mm; margin-bottom: 3mm; }
+body[data-vb-page1="timeline"][data-density="tight"] .vb-doc .vb-role::before { bottom: -3mm; }
+body[data-vb-page1="timeline"][data-density="tight"] .vb-doc .vb-role:last-child::before { bottom: 0; }
+
+/* ============================================================================
+   Print
+   ============================================================================ */
+@media print {
+  body { width: 210mm; min-height: 297mm; background: white; }
+  .vb-doc .vb-page { margin: 0; }
+  .vb-doc .vb-page + .vb-page { margin-top: 0; }
+  .vb-doc .vb-projects li { padding: 0.5mm 0 0.5mm 3.2mm; }
+  .vb-doc .vb-header-right { column-gap: 2mm; row-gap: 0.3mm; padding-bottom: 0; align-content: end; }
+  .vb-doc .vb-contact-row > * { padding-bottom: 0.5mm; }
+}

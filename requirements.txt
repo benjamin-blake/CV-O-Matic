@@ -1,0 +1,25 @@
+# CV Generator Requirements
+# Python dependencies for CV PDF generation with Playwright (headless Chromium)
+
+# Core PDF generation
+playwright>=1.49.0
+
+# HTML templating
+jinja2>=3.1.0
+
+# YAML data parsing
+pyyaml>=6.0
+
+# Google Drive sync
+google-api-python-client>=2.0.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.0.0
+
+# Environment variable loading
+python-dotenv>=1.0.0
+
+# Note: After installing, run the Chromium browser download step:
+#   python -m playwright install chromium
+# setup.py handles this automatically.
+
+# Add additional runtime dependencies here as implementation evolves.
