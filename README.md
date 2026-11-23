@@ -1,4 +1,4 @@
-# job-seeker
+# cv-template
 
 An agent-first job search for data and analytics people, driven by [Claude Code](https://claude.com/claude-code). Describe what you want in plain English; Claude finds postings, scores them against your criteria, builds a tailored CV and application answers on request, and keeps track of every application.
 
