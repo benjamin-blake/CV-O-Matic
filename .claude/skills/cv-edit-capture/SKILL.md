@@ -4,8 +4,8 @@ description: >-
   Use when the user asks Claude Code to change, reword, shorten, lengthen, trim,
   swap, reorder, soften, strengthen, or otherwise edit the CONTENT of an
   already-built CV for a specific posting - e.g. "shorten the summary on the
-  Acme CV", "reword the second highlight on the Globex CV", "the projects are
-  too long", "soften 'standards-setting' on the Initech CV", "swap that
+  Home Office CV", "reword the second highlight on the Scotland Yard CV", "the projects are
+  too long", "soften 'standards-setting' on the Baskerville & Co CV", "swap that
   achievement", "make the skills matrix punchier". This is the conversational
   (Path B) route into the cv-tweak-capture loop: apply the edit to the posting's
   config, re-validate and re-render with visual review, and then persist the
@@ -36,7 +36,7 @@ already has generated artefacts under `postings/{slug}/`.
 **Does not fire:**
 - Building a CV that does not exist yet -> `/build-cv {slug}`.
 - Finding or scoring jobs -> `/scan-indeed`, `/scan-companies`.
-- Flipping application status ("mark Acme as applied") -> edit `applications.yaml`.
+- Flipping application status ("mark the Home Office as applied") -> edit `applications.yaml`.
 - A pure question about a CV ("what did I say about dbt?") -> just answer.
 
 If you are unsure whether a message is an edit request, ask one short
@@ -47,7 +47,7 @@ clarifying question rather than guessing.
 ### 1. Resolve the posting
 
 Identify the target `postings/{slug}/`. If the message names a company
-("the Acme CV", "the Globex one"), match it against `postings/` directories. If
+("the Home Office CV", "the Scotland Yard one"), match it against `postings/` directories. If
 ambiguous or unstated, ask which posting. Confirm the posting has been built
 (a `config/` directory and generated `{name_slug}_cv.html` exist; `python3 -m models.profile` prints the file names); if it has
 not, this is a build, not an edit - redirect to `/build-cv`.

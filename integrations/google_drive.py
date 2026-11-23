@@ -44,7 +44,7 @@ _MIME_TYPES: dict[str, str] = {
 _ROOT_FILES = ["applications.yaml"]
 
 _TOKEN_PATH = Path("token.json")
-_ROOT_FOLDER_NAME = "job-seeker"
+_ROOT_FOLDER_NAME = "cv-o-matic"
 
 
 def _authenticate():

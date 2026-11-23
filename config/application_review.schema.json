@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/job-seeker/config/application_review.schema.json",
+  "$id": "https://example.com/cv-o-matic/config/application_review.schema.json",
   "title": "ApplicationReview",
   "description": "Detailed analytical review for a posting under postings/{slug}/. Written by /review-application; consumed by /build-cv and on-demand reading. The workflow-spine fields (status, status_changed_at, cv_built_at) live in the root-level applications.yaml, not here.",
   "type": "object",

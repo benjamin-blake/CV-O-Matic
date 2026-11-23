@@ -1,4 +1,4 @@
-"""CLI entrypoint for the job-seeker repo.
+"""CLI entrypoint for the CV-O-Matic repo.
 
 Discovery, CV generation, and application review are slash commands in
 `.claude/commands/` - invoked via Claude Code (or scheduled via `/schedule`).
@@ -13,7 +13,7 @@ from pathlib import Path
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Job-seeker CLI - runs Google Drive sync. Discovery and CV generation are Claude slash commands.",
+        description="CV-O-Matic CLI - runs Google Drive sync. Discovery and CV generation are Claude slash commands.",
     )
     subparsers = parser.add_subparsers(dest="command")
 

@@ -60,7 +60,7 @@ Files: `cv/cv_core_data.yaml`, `cv/cv_achievements.yaml`.
    unless the user insists (UK practice is to omit them). Explain that the name
    here also names their generated CV files.
 3. Draft `roles`, **newest first**. Give each a short, stable snake_case `id`
-   (company-based, e.g. `acme_corp`). Explain that this order is the CV's
+   (company-based, e.g. `home_office`). Explain that this order is the CV's
    reverse-chronological order everywhere.
 4. Draft `education`.
 5. Draft `skills_matrix`: group tools into 4 to 8 categories, then ask the user
@@ -156,12 +156,14 @@ tuned for UK data and analytics roles. Offer three options:
    using today's UTC date (see `models/slug.py`), and add the index entry with
    `models.applications_index.upsert`.
 4. Run `/build-cv {slug}` and walk through its output together: the
-   analysis, the selected achievements, the reviewer report, the PDF.
+   analysis, the evidence check, the selected achievements, the reviewer
+   report, the PDF. When the evidence check asks about criteria the library
+   does not cover, explain why it matters: this is how the library grows.
 5. Invite one round of edits in plain English ("make the summary shorter").
    This triggers the `cv-edit-capture` skill, which also records the reason so
    the same tweak is made automatically next time. Point that out.
 
-**Tip:** you never need to remember slash commands; "build me a CV for the Acme
+**Tip:** you never need to remember slash commands; "build me a CV for the Home Office
 posting" works too.
 
 ## Phase 7 - Save your work
@@ -207,7 +209,7 @@ the user to confirm each step. Read `CLAUDE.md` ("Common workflows",
   routine PRs that only touch `postings/` and `applications.yaml` merge
   themselves (`.github/workflows/auto-merge-routine.yml`).
 - **ntfy:** generate a private topic with
-  `python3 -c "import secrets; print('job-seeker-' + secrets.token_hex(8))"`,
+  `python3 -c "import secrets; print('cv-o-matic-' + secrets.token_hex(8))"`,
   put `https://ntfy.sh/{topic}` in `.env` as `NTFY_URL` and in the routine's
   environment, then subscribe in the ntfy phone app. Stress that the topic URL
   is a password: never commit it.
@@ -221,11 +223,19 @@ again later and jump straight to this phase.
 
 ## Finish
 
-Summarise in a few lines: what is set up, what was skipped, and the three
+Summarise in a few lines: what is set up, what was skipped, and the four
 things they will do most often:
 
 - "What's worth applying to?" (or `/briefing`)
 - "Build me a CV for {posting}" (`/build-cv`)
 - "Mark {company} as applied"
+- "Oh, I've done that!" whenever a posting mentions something they have
+  experience with but that is not in their library yet
+
+Spend two sentences on the last one, because it is the habit people do not
+have by instinct: the tool can only use what is written in the achievement
+library, and postings are the best reminder of forgotten experience. Every
+captured achievement makes every future CV, review and application answer
+better, and `/build-cv` and `/briefing` will prompt them when they spot a gap.
 
 **Tip:** `CLAUDE.md` is the map of the whole repo; ask Claude to explain any part of it.

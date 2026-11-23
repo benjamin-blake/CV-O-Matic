@@ -11,7 +11,7 @@ Review all CV config files for a given posting before HTML/PDF generation. Retur
 
 ## Required input
 
-The invoking command must provide the posting slug (e.g. `2026-01-15_acme_senior_data_analyst`). All paths are relative to the repo root.
+The invoking command must provide the posting slug (e.g. `2026-01-15_home_office_senior_data_analyst`). All paths are relative to the repo root.
 
 ## Step 1: Load source data
 

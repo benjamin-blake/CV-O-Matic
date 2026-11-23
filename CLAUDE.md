@@ -1,4 +1,4 @@
-# job-seeker - Claude Code conventions
+# CV-O-Matic - Claude Code conventions
 
 This repo is **agent-first**: discovery, CV generation, and application tracking are driven by Claude routines and slash commands. Python is a thin layer for things Claude shouldn't do at runtime (OAuth, Playwright PDF rendering, Google Drive sync, the index helper).
 
@@ -14,6 +14,16 @@ The repo ships with a **fictional example profile** (Sherlock Holmes, a public-d
 ## End goal
 
 Scheduled routines find new job postings, score them against `config/job_seeker.yaml`, and append entries to `applications.yaml` at the repo root (status: `open`). They do **not** build CVs - the candidate runs `/build-cv {slug}` manually for postings they want to apply to. The candidate uses Claude Code (web / desktop / cloud) as the interface for everything: status updates, on-demand CV builds, status queries. Google Drive (optional) is pure object storage for the generated PDFs. Nothing in this repo ever submits an application or sends an email.
+
+## It gets better the more it knows
+
+Every CV, review and application answer is capped by what is written in `cv/cv_achievements.yaml` and the `skills_matrix` in `cv/cv_core_data.yaml`: nothing is ever invented to fill a gap. Most people under-describe their own experience, and the best reminder of forgotten work is a posting that asks for it ("oh, I've done that!"). Three things turn that moment into a habit:
+
+- **`/build-cv` Step 1.5 (evidence check)** lists the posting's criteria that the library does not cover and asks the candidate whether they have done any of them, before achievements are selected.
+- **`/briefing` EVIDENCE GAPS** surfaces gaps that recur across several strong postings, which is where one captured achievement pays off most.
+- **The `achievement-capture` skill** fires whenever the candidate volunteers experience in conversation. It asks what they did, what changed and whether there is a number, confirms the entry, writes it to the library (and the skills matrix), and offers to refresh any affected review or CV.
+
+When working in this repo, treat any mention of new experience as a prompt to capture it, and gently nudge the candidate to add detail (especially outcomes and numbers) rather than accepting a thin library.
 
 ## Privacy
 
@@ -48,6 +58,7 @@ The template may be public, but a personal copy holding `applications.yaml`, sal
     application-pack-refresh/SKILL.md      Conversational front door to /application-pack - fires on "draft/refresh my application answers for X", not on read-only questions
     review-application-refresh/SKILL.md    Conversational front door to /review-application - fires on "redo/refresh the review for X" (posting or CV changed), not on rule-driven bulk rescoring (that's /rescore-application) or read-only questions
     negotiate-on-offer/SKILL.md            Conversational front door to /negotiate - fires when the candidate reports an actual offer, not on speculative offer talk
+    achievement-capture/SKILL.md           Grows the achievement library - fires on "oh, I've done that" / "add this to my achievements" or an answer to an evidence prompt
 
 applications.yaml                **THE SOURCE OF TRUTH FOR STATUS.** One entry per posting. Statuses:
                                  open / applied / declined / closed / rejected. Entries may also carry
@@ -124,7 +135,7 @@ setup.py                         Creates cv/.venv and installs Playwright Chromi
 - **CV venv lives at `cv/.venv/`.** Activate with `cv/.venv/Scripts/activate` (Windows) or `cv/.venv/bin/activate` (Unix). Run CV generation from inside `cv/`.
 - **`applications.yaml` is the canonical state spine.** All five statuses (`open`, `applied`, `declined`, `closed`, `rejected`) live there, keyed by `slug`. Scan routines append entries via `models.applications_index.upsert`; status transitions happen by editing the YAML directly (manually, or via Claude Code). `/check-email` is the only routine that auto-flips status, and only on high-confidence signals: an ATS confirmation email flips `open` -> `applied` (proof the candidate actually submitted), and a rejection email flips to `rejected`. The per-posting `application_review.json` is the **detailed analysis**, not state.
 - **Discovery routines do not build CVs.** `/scan-indeed` and `/scan-companies` write `posting.txt` + `application_review.json` + the index entry and stop. The candidate chooses which to apply to and runs `/build-cv {slug}` on demand.
-- **Slug format.** Posting directories are named `YYYY-MM-DD_{company_kebab}_{title_kebab}` where the date is the discovery date in UTC, e.g. `2026-01-15_acme_senior_data_analyst`. The date prefix never changes once set; renaming a posting requires a `git mv` and a matching `slug` field update in `applications.yaml`.
+- **Slug format.** Posting directories are named `YYYY-MM-DD_{company_kebab}_{title_kebab}` where the date is the discovery date in UTC, e.g. `2026-01-15_home_office_senior_data_analyst`. The date prefix never changes once set; renaming a posting requires a `git mv` and a matching `slug` field update in `applications.yaml`.
 - **Slash commands are the agent surface.** Don't add Python equivalents for `discover` / `notify` / `generate` in `main.py` - these are slash commands now. `main.py` is for `sync` only.
 - **Profile guard.** Commands that act on real data start with `python3 -m models.profile --check` and stop if it fails (see "First run").
 
@@ -165,7 +176,7 @@ Both produce PRs that the `auto-merge-routine.yml` workflow validates (path-scop
 
 ### On-demand: decision briefing
 
-- **`/briefing`** - run it whenever you want a pipeline snapshot. Produces TOP PICKS, AGING, IN FLIGHT, INTERVIEWS, and FUNNEL sections. Read-only and chat-only: it does not stamp a watermark, commit, or push a notification.
+- **`/briefing`** - run it whenever you want a pipeline snapshot. Produces TOP PICKS, AGING, IN FLIGHT, INTERVIEWS, EVIDENCE GAPS and FUNNEL sections. Read-only and chat-only: it does not stamp a watermark, commit, or push a notification.
 
 ### Routine (scheduled): prune stale open postings
 
@@ -209,7 +220,7 @@ After hand-finishing a CV, run `/capture-cv-tweaks {slug}` so the edit never has
 
 Drafts `postings/{slug}/application_pack.md`: ready-to-paste answers to standard UK application-form questions plus posting-specific ones, grounded strictly in `cv/cv_achievements.yaml` / `config/application_answers.yaml`. `/build-cv` already generates this at Step 7.6, so you mostly need this standalone form when a form's questions change or the pack needs a refresh without rebuilding the CV.
 
-You do not have to remember the slash form. The `application-pack-refresh` skill (`.claude/skills/application-pack-refresh/SKILL.md`) auto-triggers on a conversational request ("draft my application answers for Acme", "refresh the Globex pack, the form's different now") and runs this command for you. It does not fire on a plain read-only question about an existing pack.
+You do not have to remember the slash form. The `application-pack-refresh` skill (`.claude/skills/application-pack-refresh/SKILL.md`) auto-triggers on a conversational request ("draft my application answers for the Home Office", "refresh the Scotland Yard pack, the form's different now") and runs this command for you. It does not fire on a plain read-only question about an existing pack.
 
 ### On-demand: refresh a posting's analytical review
 
@@ -219,7 +230,7 @@ You do not have to remember the slash form. The `application-pack-refresh` skill
 
 Writes or refreshes `postings/{slug}/application_review.json` by re-invoking the `job-matcher` subagent against the current posting text and achievement library. `/build-cv` already calls this internally at Step 7.5, so the standalone form is for when the posting text or the achievement library changed and the sub-scores need re-judging cold.
 
-You do not have to remember the slash form. The `review-application-refresh` skill (`.claude/skills/review-application-refresh/SKILL.md`) auto-triggers on a conversational request ("redo the review for Acme, I updated the posting", "the achievement library changed, refresh Globex's review"). It does not fire for a rule-driven bulk rescore across many postings (that's `/rescore-application`, below) or for a plain read-only question.
+You do not have to remember the slash form. The `review-application-refresh` skill (`.claude/skills/review-application-refresh/SKILL.md`) auto-triggers on a conversational request ("redo the review for the Home Office, I updated the posting", "the achievement library changed, refresh the Scotland Yard review"). It does not fire for a rule-driven bulk rescore across many postings (that's `/rescore-application`, below) or for a plain read-only question.
 
 ### On-demand: capture recurring CV tweaks
 
@@ -229,7 +240,7 @@ You do not have to remember the slash form. The `review-application-refresh` ski
 
 Every built CV tends to need the same few manual tweaks (adopt different wording, trim a section to fit the page). This command diffs what `/build-cv` generated against the version the candidate actually shipped (or the edits they asked Claude Code to make in-session), classifies each edit into a pattern class, and records it in `docs/cv-tweak-ledger.yaml` with the **reason** behind it. On a pattern's **second** appearance across different postings (the two-strike rule), it proposes a generalised rule - either a `build-cv.md` guidance line or a deterministic `cv/check_lengths.py` check - and, on explicit approval, promotes it so the tweak is made automatically next time. The ledger is the memory: one-off edits stay `observed`; recurring ones become `rule_added`. Nothing is written to `build-cv.md` or `check_lengths.py` without per-proposal approval.
 
-You do not have to remember to run this. The `cv-edit-capture` skill (`.claude/skills/cv-edit-capture/SKILL.md`) auto-triggers whenever you ask Claude Code to change the content of an already-built CV ("shorten the summary on the Acme CV", "reword that highlight"): it applies the edit, re-renders with visual review, and runs this capture loop for you, then opens a PR to merge.
+You do not have to remember to run this. The `cv-edit-capture` skill (`.claude/skills/cv-edit-capture/SKILL.md`) auto-triggers whenever you ask Claude Code to change the content of an already-built CV ("shorten the summary on the Home Office CV", "reword that highlight"): it applies the edit, re-renders with visual review, and runs this capture loop for you, then opens a PR to merge.
 
 ### On-demand: rescore a posting after a scoring change
 
@@ -258,16 +269,16 @@ For the complementary case - the posting text or achievement library changed and
 
 At offer stage, this command combines the candidate's supplied offer details, the posting's `application_review.json`, sector-adjusted floors and targets from `config/job_seeker.yaml`, and the local salary distribution from `python3 -m models.comp`. It returns a chat-only brief covering market position, counter-anchor, non-base levers, walk-away line and a short British-English script. It does not browse the web or commit an artefact unless explicitly asked.
 
-You do not have to remember the slash form at the one moment it matters most. The `negotiate-on-offer` skill (`.claude/skills/negotiate-on-offer/SKILL.md`) auto-triggers the moment the candidate reports an actual offer in chat ("I got an offer from Acme, base of 90k") - including one surfaced by a `/check-email` PR - and runs this command for them. It does not fire on speculative offer talk with no real offer yet.
+You do not have to remember the slash form at the one moment it matters most. The `negotiate-on-offer` skill (`.claude/skills/negotiate-on-offer/SKILL.md`) auto-triggers the moment the candidate reports an actual offer in chat ("I got an offer from the Home Office, £62k base") - including one surfaced by a `/check-email` PR - and runs this command for them. It does not fire on speculative offer talk with no real offer yet.
 
 ### On-demand: flip a status
 
-Edit `applications.yaml` directly, or ask Claude Code: "mark {company} as applied" / "set Acme to closed". Claude Code uses `models.applications_index.set_status`:
+Edit `applications.yaml` directly, or ask Claude Code: "mark {company} as applied" / "set the Home Office to closed". Claude Code uses `models.applications_index.set_status`:
 
 ```python
 from models.applications_index import load, set_status, save
 data = load()
-set_status(data, "2026-01-15_acme_senior_data_analyst", "closed",
+set_status(data, "2026-01-15_home_office_senior_data_analyst", "closed",
            notes="Closed before I got round to applying.")
 save(data)
 ```
@@ -383,7 +394,7 @@ The URL has the form `https://ntfy.sh/{topic}` where `{topic}` is a long random 
 - GitHub Actions secret `NTFY_URL` (for any future workflow that pushes from CI).
 - The scheduled routine's environment configuration (for the cron-driven routines themselves).
 
-If you ever need to rotate it: generate a new random identifier (`python3 -c "import secrets; print('job-seeker-' + secrets.token_hex(8))"`), update all three locations above, and re-subscribe on the phone.
+If you ever need to rotate it: generate a new random identifier (`python3 -c "import secrets; print('cv-o-matic-' + secrets.token_hex(8))"`), update all three locations above, and re-subscribe on the phone.
 
 If `NTFY_URL` is unset, the push step in each routine logs a warning and exits cleanly. The PR remains the canonical record. Routines never fail because of a notification problem.
 

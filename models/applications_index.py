@@ -49,7 +49,7 @@ VALID_EMAIL_TYPES = {
 }
 
 _HEADER = (
-    "# applications.yaml - canonical state spine for job-seeker.\n"
+    "# applications.yaml - canonical state spine for CV-O-Matic.\n"
     "# Edit me to flip status (open / applied / declined / closed).\n"
     "# Detailed per-posting analysis lives in postings/{slug}/application_review.json.\n\n"
 )

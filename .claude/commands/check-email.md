@@ -62,7 +62,7 @@ Where the type is ambiguous, prefer `other` and surface for manual triage rather
 
 For each classified message, attempt to match in this order:
 
-1. **Exact subject contains company + role keyword** (e.g. "Acme - Senior Data Analyst").
+1. **Exact subject contains company + role keyword** (e.g. "Home Office - Senior Data Analyst").
 2. **Sender domain matches a known company domain** (for example `@examplecorp.com`) combined with title overlap from subject/body. Build the sender domain -> company map from `config/company_watchlist.yaml :: companies[*].careers_url`.
 3. **Body mentions company + title** with reasonable token overlap.
 4. **Sender or subject mentions company name** only - log as low-confidence match.
@@ -159,10 +159,10 @@ Return to the caller AND use as the PR body:
 Watermark: {last_check_email_run} -> {now}
 
 ### Status changes ({S})
-- **Acme - Senior Data Analyst**: applied -> rejected
+- **Home Office - Senior Data Analyst**: applied -> rejected
   Email: {subject} ({date})
   https://mail.google.com/mail/u/0/#inbox/{thread_id}
-- **Globex - Analytics Manager**: open -> applied
+- **Scotland Yard - Analytics Manager**: open -> applied
   Email: {subject} ({date})
   https://mail.google.com/mail/u/0/#inbox/{thread_id}
 

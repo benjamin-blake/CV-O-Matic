@@ -3,8 +3,8 @@ name: negotiate-on-offer
 description: >-
   Use when the user reports, in conversation, that they have actually received a
   job offer, or asks for help thinking through one - e.g. "I got an offer
-  from Acme, £90k base plus equity", "Globex just offered me the role",
-  "what should I counter with on this offer?", "help me negotiate the Initech
+  from the Home Office, £62k base plus the Civil Service pension", "Scotland Yard just offered me the role",
+  "what should I counter with on this offer?", "help me negotiate the Baskerville & Co
   offer". Also fires if the user surfaces or pastes in an offer email or a
   /check-email PR that flagged an `offer`-type email_activity entry and asks
   what to do about it. This is the conversational front door to /negotiate;
@@ -35,7 +35,7 @@ offered me X" statement as firing, even if the offer details are incomplete
   discuss normally, do not run the full brief.
 - Interview scheduling, prep, or feedback -> `/log-interview`,
   `/prep-interview`.
-- Status changes ("mark Acme as applied") -> edit `applications.yaml`
+- Status changes ("mark the Home Office as applied") -> edit `applications.yaml`
   directly.
 
 If you are not sure whether an offer is real yet, ask one short clarifying

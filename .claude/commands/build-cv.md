@@ -7,7 +7,7 @@ argument-hint: <posting_slug>
 
 Generate a bespoke CV for the posting at `postings/$1/`. Use **British English** throughout. No em-dashes.
 
-**Posting slug:** `$1` (format: `YYYY-MM-DD_{company}_{title_kebab}`, e.g. `2026-01-15_acme_senior_data_analyst`)
+**Posting slug:** `$1` (format: `YYYY-MM-DD_{company}_{title_kebab}`, e.g. `2026-01-15_home_office_senior_data_analyst`)
 
 If `$1` is empty, ask the user for the posting slug (a directory under `postings/`). If the user gives an undated slug, prepend today's UTC date and rename the directory before proceeding.
 
@@ -47,6 +47,34 @@ Read `postings/$1/posting.txt` and extract:
 - Nice-to-have / preferred criteria
 - Technical skills, domain context, application requirements
 - If line 1 looks like a URL: fetch it for additional context (WebFetch)
+
+---
+
+## Step 1.5: Evidence check (interactive runs only)
+
+A posting is the best memory-jogger the candidate will get, so use it before
+selecting achievements. Compare the essential and preferred criteria from
+Step 1 against `cv/cv_achievements.yaml` and the `skills_matrix` in
+`cv/cv_core_data.yaml`. List every criterion with **no** or only **weak**
+evidence (at most 5, essential criteria first).
+
+If there are none, say so in one line and continue. Otherwise ask the user once,
+in a single message:
+
+> "This posting asks for a few things your achievement library doesn't cover
+> yet: {criterion 1}, {criterion 2}, ... Have you done any of these, even
+> briefly or outside a formal role? If so, tell me and I'll add it to your
+> library before building the CV. If not, no problem: I'll build with what's
+> there."
+
+For each item the user confirms, follow the `achievement-capture` skill
+(`.claude/skills/achievement-capture/SKILL.md`) to record it properly, then
+continue to Step 2 with the updated library. Never add evidence the user has
+not stated, and never turn a "no" into a softened claim.
+
+Skip this step silently when running unattended (no user present to answer).
+Gaps that remain are still recorded in `application_review.json -> gaps` at
+Step 7, which is where `/briefing` picks them up later.
 
 ---
 
@@ -337,7 +365,7 @@ This sets `cv_built_at` to today's date. Status stays at whatever it was (typica
 python main.py sync
 ```
 
-Uploads `posting.txt`, `personal_statement.txt`, `{name_slug}_cv.html`, `{name_slug}_cv.pdf` for the posting to `Drive/job-seeker/postings/$1/`, plus the root `applications.yaml` so the index reflects the new `cv_built_at` timestamp.
+Uploads `posting.txt`, `personal_statement.txt`, `{name_slug}_cv.html`, `{name_slug}_cv.pdf` for the posting to `Drive/cv-o-matic/postings/$1/`, plus the root `applications.yaml` so the index reflects the new `cv_built_at` timestamp.
 
 ---
 

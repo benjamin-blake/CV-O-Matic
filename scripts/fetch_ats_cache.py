@@ -619,7 +619,7 @@ def main(argv: list[str]) -> int:
         print(f"pruned old body dirs: {', '.join(pruned)}", file=sys.stderr)
 
     session = requests.Session()
-    session.headers.update({"User-Agent": "job-seeker-ats-cache/1.0"})
+    session.headers.update({"User-Agent": "cv-o-matic-ats-cache/1.0"})
 
     results: list[CompanyResult] = []
     for company in companies:

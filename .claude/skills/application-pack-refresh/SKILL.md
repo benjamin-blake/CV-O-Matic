@@ -3,14 +3,14 @@ name: application-pack-refresh
 description: >-
   Use when the user asks, in conversation, to generate, draft, write, refresh,
   regenerate, redo, or update the ready-to-paste application-form answers for
-  a posting - e.g. "draft my application answers for the Acme posting",
-  "refresh the application pack for Globex, the form asks different questions
+  a posting - e.g. "draft my application answers for the Home Office posting",
+  "refresh the application pack for Scotland Yard, the form asks different questions
   now", "redo the application pack, my notice period changed", "write the
-  application answers for the Initech role". This is the conversational
+  application answers for the Baskerville & Co role". This is the conversational
   front door to /application-pack; it exists so the user does not have to
   remember the slash command. Do NOT use this for a plain read-only question
-  about an existing pack ("what did I say about my notice period on the Acme
-  pack?", "show me the application pack for Globex") - just read and answer
+  about an existing pack ("what did I say about my notice period on the Home Office
+  pack?", "show me the application pack for Scotland Yard") - just read and answer
   from the file. Do NOT use this for building a CV from scratch (/build-cv)
   or for writing the analytical review (see review-application-refresh).
 ---
