@@ -2,7 +2,7 @@
 
 An agent-first job search, driven by [Claude Code](https://claude.com/claude-code). Describe what you want in plain English; Claude finds postings, scores them against your criteria, builds a tailored CV and application answers on request, and keeps track of every application.
 
-**Who it is for:** anyone looking for a job. It started life as a UK data and analytics job search, so the examples, the example profile and the starter company watchlist all lean that way, but nothing in the engine is specific to data: your CV, your criteria and your watchlist decide what it looks for and how it scores. `/onboard` sets all three up for your field.
+**Who it is for:** anyone looking for a job. It started life as a UK data and analytics job search, so the examples and the fictional example profile lean that way, but nothing in the engine is specific to data, and the company watchlist ships empty apart from two fictional placeholders: your CV, your criteria and your watchlist decide what it looks for and how it scores. `/onboard` sets all three up for your field.
 
 ## What it is, and what it is not
 
@@ -101,7 +101,7 @@ Claude does the thinking; Python only does what Claude should not do at runtime:
 ## Customising
 
 - **What you are looking for:** `config/job_seeker.yaml` holds target roles, seniority, location and office-day rules, pay floors and targets, must-haves, deal-breakers, role families and scoring weights. Edit it directly or ask Claude to ("raise my salary floor to 75k", "add fintech to the deal-breakers"), then `/rescore-application` to re-apply the rules to existing postings.
-- **Where to look:** `config/company_watchlist.yaml` lists employers checked directly. It ships tuned for UK data and analytics roles; if you work in another field, `/onboard` and `/discover-companies` will help you replace it with employers in yours. Prune it by hand or with `/prune-watchlist`.
+- **Where to look:** `config/company_watchlist.yaml` lists employers checked directly. It ships with only two fictional placeholders; `/onboard` builds a real one with you from employers you already know plus a `/discover-companies` sweep for your field. Prune it by hand or with `/prune-watchlist`.
 - **How the CV looks:** `cv/cv_config.yaml` has the colour schemes and template settings. Ask for a different scheme in plain English, or set `default_color_scheme`.
 - **What the CV says:** `cv/cv_core_data.yaml` (roles, education, skills) and `cv/cv_achievements.yaml` (the achievement library). These are your source of truth; edit them via `/onboard` or by asking Claude, and keep every metric honest.
 

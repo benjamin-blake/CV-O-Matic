@@ -1,25 +1,39 @@
-# EXAMPLE watchlist, tuned for UK data / analytics roles (analyst, analytics engineer,
-# data engineer, data science and AI/ML adjacent). Keep what suits you and edit freely:
+# Companies to monitor for off-board postings - roles that often never reach Indeed.
+# Crawled by /scan-companies (omnibus) or /scan-companies --only <name> (single), and
+# cached daily by .github/workflows/fetch-ats-cache.yml.
+# See CLAUDE.md and .claude/commands/scan-companies.md.
+#
+# >>> EXAMPLE WATCHLIST <<<
+# The two entries below are FICTIONAL placeholders (they belong to the Sherlock Holmes
+# example profile) so the file has a realistic shape to copy. They do not exist and will
+# never return jobs. /onboard Phase 4 replaces them with employers in your own field,
+# using companies you already know plus a /discover-companies sweep. Afterwards,
 # /discover-companies proposes new ATS-verified additions and /prune-watchlist removes
 # stale slugs, so the list maintains itself once those are scheduled.
 #
-# Companies to monitor for off-board postings - roles that often never reach Indeed.
-# Crawled by /scan-companies (omnibus) or /scan-companies --only <name> (single).
-# See CLAUDE.md and .claude/commands/scan-companies.md.
-#
 # Filter semantics:
-#   Title and location filtering use config/job_seeker.yaml :: target_roles and :: location.
-#   No per-company keyword overrides - single source of truth keeps things consistent.
-#   If you want a company-specific role title included (e.g. "Research Engineer" only at
-#   AI labs), add it to job_seeker.yaml :: target_roles globally and rely on job-matcher
-#   to reject it at non-relevant companies.
+#   Title and location filtering use config/job_seeker.yaml :: target_roles (plus the
+#   optional discovery.title_keywords) and :: location. No per-company keyword
+#   overrides - single source of truth keeps things consistent.
+#
+# Grouping:
+#   Group companies under comment headers that make sense for your search (by sector,
+#   stage, priority, whatever helps you prune). The headers are for humans only;
+#   /discover-companies inserts new entries under the best-fitting existing header.
 #
 # Each company has an `ats` field telling /scan-companies which public job board API to
-# hit (Tier 1 fetch). Slug values verified by probe on 2026-05-15.
-# This file is intentionally ATS-only - companies without Greenhouse/Lever/Ashby/
-# SmartRecruiters/Workable were dropped after the 2026-05-15 pivot, since Tier 2/3
-# fallbacks (WebSearch, WebFetch) proved unreliable against modern bot blocking. Civil
-# service and other no-ATS sources are picked up via /scan-indeed.
+# hit (Tier 1 fetch). Only companies on one of the five supported ATSes belong here:
+# Tier 2/3 fallbacks (WebSearch, WebFetch) are unreliable against modern bot blocking.
+# Employers without a supported ATS (many public-sector bodies, for example) are picked
+# up via /scan-indeed instead.
+#
+# Entry fields:
+#   name          required, display name (also used by --only)
+#   careers_url   required, the human-facing careers page
+#   ats.type      greenhouse | lever | ashby | smartrecruiters | workable
+#   ats.slug      the board identifier in that ATS's public API (see endpoints below)
+#   priority      high | medium | low - scan order, not cadence
+#   notes         optional free text (slug quirks, board size, caveats)
 #
 # ATS endpoint reference:
 #   greenhouse:      https://boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true
@@ -32,435 +46,27 @@
 
 companies:
 
-  # --- Group 1: AI labs / safety-aligned research (high priority, US comp typical) ---
+  # --- Example group: fictional placeholders, replaced by /onboard ---
 
-  - name: Anthropic
-    careers_url: https://www.anthropic.com/careers
+  - name: Baskerville & Co
+    careers_url: https://careers.example.com/baskerville
     ats:
       type: greenhouse
-      slug: anthropic
+      slug: baskerville-example
     priority: high
     notes: |
-      ~400 open roles globally - global filters from job_seeker.yaml are essential.
+      FICTIONAL example entry. Shows a typical high-priority employer with a
+      Greenhouse board. Replace with a real company.
 
-  - name: DeepMind
-    careers_url: https://deepmind.google/about/careers/
-    ats:
-      type: greenhouse
-      slug: deepmind
-    priority: high
-
-  - name: OpenAI
-    careers_url: https://openai.com/careers/
+  - name: Reichenbach Analytics
+    careers_url: https://careers.example.com/reichenbach
     ats:
       type: ashby
-      slug: openai
-    priority: high
-    notes: |
-      Ashby API can be slow (>20s) from some networks; increase timeout
-      and retry once on TimeoutError before falling back to Tier 2.
-
-  - name: Cohere
-    careers_url: https://cohere.com/careers
-    ats:
-      type: ashby
-      slug: cohere
-    priority: high
-
-  - name: Mistral
-    careers_url: https://mistral.ai/careers
-    ats:
-      type: lever
-      slug: mistral
-    priority: high
-    notes: |
-      ATS corrected to Lever on 2026-05-24 (Ashby slug returned 404; careers
-      page confirmed jobs.lever.co/mistral). Filter aggressively by London / remote-EU.
-
-  - name: Apollo Research
-    careers_url: https://www.apolloresearch.ai/careers
-    ats:
-      type: lever
-      slug: apolloresearch
-    priority: high
-    notes: |
-      Small London-based AI safety lab. Few roles, but strong mission match.
-
-  - name: Hugging Face
-    careers_url: https://apply.workable.com/huggingface/
-    ats:
-      type: workable
-      slug: huggingface
-    priority: high
-
-  - name: Character.AI
-    careers_url: https://character.ai/careers
-    ats:
-      type: ashby
-      slug: character
-    priority: medium
-
-  - name: Scale AI
-    careers_url: https://scale.com/careers
-    ats:
-      type: greenhouse
-      slug: scaleai
-    priority: medium
-
-  - name: Synthesia
-    careers_url: https://www.synthesia.io/careers
-    ats:
-      type: ashby
-      slug: synthesia
-    priority: medium
-
-  - name: ElevenLabs
-    careers_url: https://elevenlabs.io/careers
-    ats:
-      type: ashby
-      slug: elevenlabs
-    priority: medium
-
-  - name: PolyAI
-    careers_url: https://poly.ai/careers
-    ats:
-      type: greenhouse
-      slug: polyai
-    priority: medium
-
-  - name: Glean
-    careers_url: https://www.glean.com/careers
-    ats:
-      type: greenhouse
-      slug: gleanwork
-    priority: medium
-
-  - name: Graphcore
-    careers_url: https://www.graphcore.ai/careers
-    ats:
-      type: greenhouse
-      slug: graphcore
+      slug: reichenbach-example
     priority: medium
     notes: |
-      AI compute/accelerator hardware (IPUs), part of SoftBank Group. UK-based
-      (Bristol/Cambridge/London). Added 2026-07-10 after a relevant Lead
-      Analytics Engineer posting surfaced that the watchlist had missed.
-
-  # --- Group 2: UK scale-up product tech / fintech (high priority) ---
-
-  - name: Monzo
-    careers_url: https://monzo.com/careers/
-    ats:
-      type: greenhouse
-      slug: monzo
-    priority: high
-
-  - name: Wise
-    careers_url: https://wise.jobs/
-    ats:
-      type: smartrecruiters
-      slug: wise
-    priority: high
-
-  - name: GoCardless
-    careers_url: https://gocardless.com/careers/
-    ats:
-      type: greenhouse
-      slug: gocardless
-    priority: high
-
-  - name: Cleo
-    careers_url: https://web.meetcleo.com/careers
-    ats:
-      type: greenhouse
-      slug: cleo
-    priority: high
-
-  - name: Tide
-    careers_url: https://www.tide.co/careers/
-    ats:
-      type: greenhouse
-      slug: tide
-    priority: high
-
-  - name: TrueLayer
-    careers_url: https://truelayer.com/careers/
-    ats:
-      type: greenhouse
-      slug: truelayer
-    priority: medium
-
-  - name: Form3
-    careers_url: https://www.form3.tech/careers
-    ats:
-      type: greenhouse
-      slug: form3
-    priority: medium
-
-  - name: Zopa
-    careers_url: https://www.zopa.com/careers
-    ats:
-      type: lever
-      slug: zopa
-    priority: medium
-
-  - name: Moneybox
-    careers_url: https://www.moneyboxapp.com/careers/
-    ats:
-      type: lever
-      slug: moneyboxapp
-    priority: medium
-
-  - name: Plum
-    careers_url: https://withplum.com/careers
-    ats:
-      type: workable
-      slug: withplum
-    priority: medium
-
-  - name: Cognism
-    careers_url: https://www.cognism.com/careers
-    ats:
-      type: greenhouse
-      slug: cognism
-    priority: medium
-
-  - name: Beauhurst
-    careers_url: https://www.beauhurst.com/careers/
-    ats:
-      type: greenhouse
-      slug: beauhurst
-    priority: medium
-
-  - name: ComplyAdvantage
-    careers_url: https://complyadvantage.com/careers/
-    ats:
-      type: greenhouse
-      slug: complyadvantage
-    priority: medium
-
-  - name: Paddle
-    careers_url: https://www.paddle.com/careers
-    ats:
-      type: ashby
-      slug: paddle
-    priority: medium
-
-  - name: Griffin
-    careers_url: https://www.griffin.com/careers
-    ats:
-      type: ashby
-      slug: griffin
-    priority: medium
-
-  - name: Codat
-    careers_url: https://www.codat.io/careers/
-    ats:
-      type: ashby
-      slug: codat
-    priority: medium
-
-  - name: Zego
-    careers_url: https://www.zego.com/careers
-    ats:
-      type: workable
-      slug: zego
-    priority: medium
-
-  # --- Group 3: UK / EU AI & data startups (series A/B-C, smaller teams, broader scope) ---
-  # Expect higher churn here - some entries will be acquired, pivot, or fold within a year.
-  # Suggest pruning this group quarterly: remove any company whose ATS slug 404s on probe.
-
-  - name: Wayve
-    careers_url: https://wayve.ai/careers/
-    ats:
-      type: greenhouse
-      slug: wayve
-    priority: medium
-
-  - name: Quantexa
-    careers_url: https://www.quantexa.com/careers/
-    ats:
-      type: ashby
-      slug: quantexa
-    priority: medium
-
-  - name: Speechmatics
-    careers_url: https://www.speechmatics.com/company/careers
-    ats:
-      type: greenhouse
-      slug: speechmatics
-    priority: medium
-
-  - name: Tractable
-    careers_url: https://tractable.ai/careers
-    ats:
-      type: ashby
-      slug: tractable
-    priority: medium
-
-  - name: Faculty
-    careers_url: https://faculty.ai/careers/
-    ats:
-      type: ashby
-      slug: faculty
-    priority: medium
-
-  - name: Multiverse
-    careers_url: https://www.multiverse.io/en-GB/careers
-    ats:
-      type: ashby
-      slug: multiverse
-    priority: medium
-
-  - name: Causaly
-    careers_url: https://www.causaly.com/careers
-    ats:
-      type: ashby
-      slug: causaly
-    priority: medium
-
-  - name: Peak
-    careers_url: https://peak.ai/careers/
-    ats:
-      type: greenhouse
-      slug: peak
-    priority: medium
-
-  - name: Robin AI
-    careers_url: https://www.robinai.com/careers
-    ats:
-      type: ashby
-      slug: robin-ai
-    priority: medium
-
-  - name: Sensat
-    careers_url: https://www.sensat.com/careers
-    ats:
-      type: ashby
-      slug: sensat
-    priority: medium
-
-  - name: PhotoRoom
-    careers_url: https://www.photoroom.com/careers
-    ats:
-      type: ashby
-      slug: photoroom
-    priority: medium
-
-  - name: Pigment
-    careers_url: https://www.pigment.com/careers
-    ats:
-      type: lever
-      slug: pigment
-    priority: medium
-
-  - name: Cradle
-    careers_url: https://www.cradle.bio/careers
-    ats:
-      type: ashby
-      slug: cradlebio
-    priority: medium
-
-  - name: Tinybird
-    careers_url: https://www.tinybird.co/careers
-    ats:
-      type: lever
-      slug: tinybird
-    priority: medium
-
-  - name: Modal Labs
-    careers_url: https://modal.com/careers
-    ats:
-      type: ashby
-      slug: modal
-    priority: medium
-
-  - name: PostHog
-    careers_url: https://posthog.com/careers
-    ats:
-      type: ashby
-      slug: posthog
-    priority: medium
-
-  - name: Inngest
-    careers_url: https://www.inngest.com/careers
-    ats:
-      type: ashby
-      slug: inngest
-    priority: medium
-
-  - name: Cursor
-    careers_url: https://www.cursor.com/careers
-    ats:
-      type: ashby
-      slug: cursor
-    priority: medium
-
-  - name: Continue
-    careers_url: https://www.continue.dev/careers
-    ats:
-      type: ashby
-      slug: continue
-    priority: medium
-
-  - name: Poolside
-    careers_url: https://poolside.ai/careers
-    ats:
-      type: ashby
-      slug: poolside
-    priority: medium
-
-  - name: Reka
-    careers_url: https://www.reka.ai/careers
-    ats:
-      type: ashby
-      slug: reka
-    priority: medium
-
-  - name: Goodfire
-    careers_url: https://www.goodfire.ai/careers
-    ats:
-      type: greenhouse
-      slug: goodfire
-    priority: medium
-    notes: |
-      AI interpretability research - mission-aligned, very small team.
-
-  - name: Far AI
-    careers_url: https://far.ai/careers
-    ats:
-      type: lever
-      slug: far-ai
-    priority: medium
-    notes: |
-      AI safety research org. Few roles, strong mission match.
-
-  - name: METR
-    careers_url: https://metr.org/careers
-    ats:
-      type: lever
-      slug: metr
-    priority: medium
-    notes: |
-      Model Evaluation and Threat Research. AI safety, US-based, remote-friendly.
-
-  - name: Immersive Labs
-    careers_url: https://www.immersivelabs.com/careers
-    ats:
-      type: ashby
-      slug: immersivelabs
-    priority: medium
-
-  - name: Healx
-    careers_url: https://www.healx.io/careers
-    ats:
-      type: lever
-      slug: healx
-    priority: medium
-    notes: |
-      AI-driven drug discovery, Cambridge UK. Only 1 open role at add time
-      (2026-07-10) - thin board, monitor for growth.
+      FICTIONAL example entry. Notes are for anything worth flagging: a slug
+      that differs from the company name, a very large board, a niche caveat.
 
 # Updated by /scan-indeed and /scan-companies after each run. Dedup is sourced from
 # the postings/ directory, not from a URL list - see .claude/commands/scan-indeed.md Step 1.

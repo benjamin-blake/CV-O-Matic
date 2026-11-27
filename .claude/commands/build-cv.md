@@ -120,7 +120,7 @@ selected_achievement_ids:
 - `fintech_green` - fintech, banking, energy and utilities
 - `tech_blue` - generic enterprise tech, SaaS
 - `creative_purple` - media, entertainment, gaming, consumer
-- `rust` - AI / research labs, or anything wanting a warmer earthy palette
+- `rust` - research, academic or creative organisations, or anything wanting a warmer earthy palette
 
 ### 3b. `postings/$1/config/summary.yaml`
 

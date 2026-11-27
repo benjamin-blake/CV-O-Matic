@@ -7,7 +7,7 @@ argument-hint: [--auto]
 
 Run a health check on every company in `config/company_watchlist.yaml`. For each entry, hit the configured ATS endpoint and report which slugs have gone stale.
 
-This is a maintenance command - slugs rot when companies change ATS providers, get acquired, or shut down. The smaller-startup groups are especially prone to churn.
+This is a maintenance command - slugs rot when companies change ATS providers, get acquired, or shut down. Smaller and start-up employers are especially prone to churn.
 
 **Two modes:**
 - **Interactive (default)** - run on demand. Confirms removals with the user via `AskUserQuestion` before editing the file, and leaves the diff uncommitted for review.
@@ -19,7 +19,7 @@ Run `python3 -m models.profile --check`. If it exits non-zero, stop: tell the us
 
 ## Step 1: Load the watchlist
 
-Read `config/company_watchlist.yaml`. For each entry under `companies[*]`, extract `name`, `ats.type`, `ats.slug`. Ignore entries without `ats` (none should exist after the 2026-05-15 pivot, but be defensive).
+Read `config/company_watchlist.yaml`. For each entry under `companies[*]`, extract `name`, `ats.type`, `ats.slug`. Ignore entries without `ats` (none should exist, since the watchlist is ATS-only, but be defensive). Also ignore the fictional placeholder entries (`notes` starting "FICTIONAL"): report them as "example placeholder, replace via /onboard Phase 4" rather than DEAD.
 
 ## Step 2: Probe each in parallel
 

@@ -74,7 +74,7 @@ interview_prep.md                Interview playbook and feedback log. Keeps the 
 
 config/
   job_seeker.yaml                The candidate's job requirements - single source of truth (also holds the profile.is_example_profile guard)
-  company_watchlist.yaml         Companies to monitor for off-board postings
+  company_watchlist.yaml         Companies to monitor for off-board postings (ships with two fictional placeholders; /onboard Phase 4 builds the real list)
   application_answers.yaml       Canonical base answers for UK application forms (keyed by question type, sector variants); consumed by /application-pack
   application_review.schema.json JSON Schema for application_review.json (detailed analysis only)
 
@@ -123,7 +123,7 @@ setup.py                         Creates cv/.venv and installs Playwright Chromi
 .github/workflows/
   auto-merge-routine.yml         Path-scoped auto-merge for routine PRs (same-repo claude/** branches only)
   sync-drive.yml                 Runs python main.py sync on push to main (paths: postings/**, applications.yaml); skips cleanly when Drive is not configured
-  fetch-ats-cache.yml            Refreshes the ATS cache used by /scan-companies
+  fetch-ats-cache.yml            Refreshes the ATS cache used by /scan-companies (skips while the example profile is active or the watchlist is empty)
   claude.yml                     @claude PR assistant - fires on @claude mentions from owners, members and collaborators only
 ```
 
@@ -191,7 +191,7 @@ Requires the Gmail MCP to be authorised on the routine's connector list. Same au
 ### Routine (scheduled, quarterly): watchlist maintenance
 
 - **`/prune-watchlist --auto`** - probes every ATS slug in `config/company_watchlist.yaml`, auto-removes only unambiguous `DEAD` (404) entries, flags `EMPTY` entries for manual review, and opens a PR. The interactive form (no `--auto`, run on demand) confirms removals via `AskUserQuestion` instead.
-- **`/discover-companies --auto`** - runs a broad, unattended sweep for new watchlist candidates (no theme steering, since nobody is there to answer the theme question), UK/EU-primary but including US-HQ companies that clear a UK-eligible-roles check, and opens a PR with every ATS-verified addition for the candidate to prune and merge. The interactive form (no `--auto`, run on demand) is a themed conversation with a final multi-select instead.
+- **`/discover-companies --auto`** - runs a broad, unattended sweep for new watchlist candidates (no theme steering, since nobody is there to answer the theme question), local-employer-primary (from `location` in `config/job_seeker.yaml`) but including foreign-HQ companies that clear a locally-eligible-roles check, and opens a PR with every ATS-verified addition for the candidate to prune and merge. The interactive form (no `--auto`, run on demand) is a themed conversation with a final multi-select instead.
 
 Both are optional Claude Code scheduled routines (quarterly cron, one calendar quarter apart from each other); each run spawns a fresh session. Both open a normal review-and-merge PR (not the `auto-merge-routine.yml` fast path), since removing or adding watchlist companies is a judgement call, not routine status data.
 
@@ -359,7 +359,7 @@ sync-drive.yml fires (optional; skips cleanly without Drive secrets)
 
 [Routine: discover-companies --auto, 1st of Jan/Apr/Jul/Oct, 07:30 UTC]
    broad unattended sweep for new watchlist candidates (no theme steering)
-   UK/EU-primary; US-HQ companies included only if a UK-eligible-roles check passes
+   local employers first; foreign-HQ companies included only if a locally-eligible-roles check passes
    probes ATS slugs, auto-adds every verified deal-breaker-clean candidate
    commits to claude/discover-companies-{date} -> opens a review-and-merge PR
 ```

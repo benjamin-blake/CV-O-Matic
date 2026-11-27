@@ -8,16 +8,17 @@ Runs on a GitHub Actions runner (open egress) and writes:
    ATS body. The body is HTML for Greenhouse/Lever/Ashby/SmartRecruiters
    and markdown for Workable; Claude reads either fine.
 
-The Anthropic scheduled-agent container is behind an egress allow-list that
-rejects every ATS host (probed 2026-05-15). The skill reads these on-disk
-artefacts so Tier 1 needs no network in the container.
+Scheduled-agent containers are often behind an egress allow-list that
+rejects every ATS host. The skill reads these on-disk artefacts so Tier 1
+needs no network in the container.
 
 Usage:
     python scripts/fetch_ats_cache.py                    # full watchlist
-    python scripts/fetch_ats_cache.py --only Anthropic   # one company
+    python scripts/fetch_ats_cache.py --only "Baskerville & Co"   # one company
 
 Exit codes:
-    0 - manifest written (or nothing changed)
+    0 - manifest written (or nothing changed), or skipped because the example
+        profile is still active / the watchlist is empty
     1 - > 50% of companies returned ``status == error`` (upstream-wide breakage)
     2 - usage / config error
 """
@@ -102,6 +103,45 @@ class FilterConfig:
     remote_ok: bool
     onsite_ok: bool
     international: bool
+    title_tokens: tuple[str, ...] = ()
+
+
+# Seniority words stripped from the front of a target role to get its topic
+# token, so "Senior Data Analyst" also matches "Data Analyst, Senior" or
+# "Lead Data Analyst". Seniority itself is judged downstream by job-matcher.
+_SENIORITY_PREFIXES = (
+    "senior", "sr", "sr.", "lead", "principal", "staff", "junior", "jr",
+    "graduate", "associate", "chief",
+)
+
+
+def derive_title_tokens(job_seeker: dict) -> tuple[str, ...]:
+    """Topic tokens for the title filter, from config/job_seeker.yaml.
+
+    Each ``target_roles`` entry contributes itself (lowercased) and, when it
+    starts with a seniority word, the remainder ("senior data analyst" ->
+    "data analyst"). ``discovery.title_keywords`` adds extra broad tokens
+    verbatim (e.g. a naming convention one employer uses). Order preserved,
+    duplicates dropped.
+    """
+    tokens: list[str] = []
+
+    def add(tok: str) -> None:
+        tok = " ".join(tok.lower().split())
+        if tok and tok not in tokens:
+            tokens.append(tok)
+
+    for role in job_seeker.get("target_roles") or []:
+        role_l = str(role)
+        add(role_l)
+        words = role_l.lower().split()
+        while len(words) > 1 and words[0] in _SENIORITY_PREFIXES:
+            words = words[1:]
+        add(" ".join(words))
+
+    for kw in (job_seeker.get("discovery") or {}).get("title_keywords") or []:
+        add(str(kw))
+    return tuple(tokens)
 
 
 def build_filter_config(job_seeker: dict) -> FilterConfig:
@@ -112,27 +152,16 @@ def build_filter_config(job_seeker: dict) -> FilterConfig:
         remote_ok=bool(loc.get("remote_ok")),
         onsite_ok=bool(loc.get("onsite_ok")),
         international=bool(loc.get("international")),
+        title_tokens=derive_title_tokens(job_seeker),
     )
 
 
-# Topic tokens - match if any appears as substring of the (lowercased) title.
-# Deliberately broad: bare "data engineer" catches Anthropic's "Data Engineer,
-# Safeguards", "member of technical staff" catches the AI-labs naming
-# convention, "head of data" / "head of ai" catches leadership variants.
-# Seniority and must-have coverage are enforced downstream by the job-matcher
-# subagent, not here - the fetcher's job is to cast a wide enough net that
-# the agent gets to use its judgement on borderline cases.
-TITLE_TOPIC_TOKENS = (
-    "data engineer", "data engineering", "data platform",
-    "data architect", "data infrastructure", "data services", "data intelligence",
-    "analytics engineer", "analytics engineering", "analytics platform",
-    "ai engineer", "ai lead", "ai technical", "ai infrastructure",
-    "machine learning engineer", "ml engineer",
-    "head of data", "head of ai", "head of analytics",
-    "enterprise architect", "solution architect",
-    "member of technical staff",
-    "software engineer, data", "software engineer (data)", "software engineer - data",
-)
+# Title filtering is deliberately broad: a title passes if any topic token
+# (see derive_title_tokens) appears as a substring. Seniority and must-have
+# coverage are enforced downstream by the job-matcher subagent, not here - the
+# fetcher's job is to cast a wide enough net that the agent gets to use its
+# judgement on borderline cases. Widen the net with
+# job_seeker.yaml :: discovery.title_keywords rather than editing this file.
 
 # Sub-Senior hints - reject regardless of topic match. The trailing space on
 # "intern " avoids dropping "international" / "internal".
@@ -160,7 +189,7 @@ def passes_filters(title: str, location: str, cfg: FilterConfig) -> bool:
         return False
     if any(j in title_l for j in _JUNIOR_HINTS):
         return False
-    if not any(t in title_l for t in TITLE_TOPIC_TOKENS):
+    if not any(t in title_l for t in cfg.title_tokens):
         return False
 
     loc_l = (location or "").lower()
@@ -593,9 +622,22 @@ def main(argv: list[str]) -> int:
 
     watchlist = load_yaml(WATCHLIST_PATH)
     job_seeker = load_yaml(JOB_SEEKER_PATH)
+
+    # The template ships a fictional example profile and placeholder watchlist.
+    # Fetching for it would only commit noise, so skip until /onboard is done.
+    if (job_seeker.get("profile") or {}).get("is_example_profile"):
+        print("skip: example profile still active (run /onboard first)", file=sys.stderr)
+        return 0
+
     cfg = build_filter_config(job_seeker)
+    if not cfg.title_tokens:
+        print("error: no target_roles / discovery.title_keywords in job_seeker.yaml", file=sys.stderr)
+        return 2
 
     companies = watchlist.get("companies") or []
+    if not companies:
+        print("skip: watchlist is empty", file=sys.stderr)
+        return 0
     if args.only:
         wanted = args.only.lower()
         companies = [c for c in companies if (c.get("name") or "").lower() == wanted]

@@ -87,7 +87,10 @@ each section briefly as you go.
 Ask, in batches:
 
 1. **Roles and level:** target job titles (offer suggestions based on their
-   CV), seniority floor and ceiling.
+   CV), seniority floor and ceiling. Explain that these titles also drive the
+   company-watchlist title filter, and offer to add broader fragments to
+   `discovery.title_keywords` (e.g. a word that appears in most relevant
+   titles in their field, or a naming convention a target employer uses).
 2. **Location:** home city, remote / hybrid / on-site acceptability, maximum
    required office days per week in their home city, other acceptable cities
    and the maximum days per month there.
@@ -128,18 +131,35 @@ Draft each answer, confirm, write.
 File: `config/company_watchlist.yaml`.
 
 Explain that this is a list of employers whose careers pages are checked
-directly (many roles never reach job boards), and that it ships as an example
-tuned for UK data and analytics roles. Offer three options:
+directly (many roles never reach job boards), that only companies on one of
+five public ATS platforms can be listed, and that it ships with two
+fictional placeholder entries (Baskerville & Co, Reichenbach Analytics) and
+no real companies, so it has to be built for their field. Then:
 
-- Keep it as it is (good if they also work in UK data / analytics).
-- Remove groups or companies that do not fit their deal-breakers or interests.
-- Keep it for now and run `/discover-companies` later to find better-fitting employers.
+1. Ask whether there are specific employers they already want to watch
+   (plain chat, free text). For each, probe the ATS slugs exactly as
+   `/discover-companies` Step 4 does and keep only verified hits; tell them
+   which had no supported ATS (those are covered by `/scan-indeed` instead).
+2. Offer a `/discover-companies` sweep (interactive mode; it skips its
+   profile guard when run from here) to suggest more, themed from the
+   criteria written in Phase 2. Suggest aiming for 10 to 30 companies to
+   start with: enough to surface postings, few enough to review.
+3. Ask how they would like the list grouped (by sector, priority, size, or
+   not at all) and write the group comment headers to match.
+4. Show the final list, confirm, then write `config/company_watchlist.yaml`:
+   remove both fictional entries, their "Example group" header and the
+   `>>> EXAMPLE WATCHLIST <<<` paragraph, and keep the schema comments.
+
+If they would rather skip this for now, remove the two fictional entries and
+leave `companies: []`: `/scan-companies` and the ATS cache workflow both
+handle an empty list cleanly, and they can run `/discover-companies` later.
 
 ## Phase 5 - Remove the example
 
 1. Check that no example data remains: grep the repo (excluding `.git`) for
    `Sherlock`, `Holmes`, `baker_street`, `diogenes_club`, `montague_street`,
-   `example.com`, `bs_`, `dc_`, `ms_` ids in the data files. Data files must be
+   `example.com`, `Baskerville`, `Reichenbach`, `FICTIONAL`, `bs_`, `dc_`,
+   `ms_` ids in the data files (including `config/company_watchlist.yaml`). Data files must be
    clean. Example snippets inside `.claude/` prompts and `README.md` are
    documentation and stay.
 2. Set `profile.is_example_profile: false` in `config/job_seeker.yaml`.
@@ -205,6 +225,14 @@ the user to confirm each step. Read `CLAUDE.md` ("Common workflows",
 - **Scheduled routines:** create them with Claude Code's scheduled routines
   feature, one per command, at the suggested times (scans 07:00 and 08:00 UTC,
   Gmail 09:00 UTC). Mention that scheduled runs use their Claude plan's usage.
+- **ATS cache (needed for company scans):** `.github/workflows/fetch-ats-cache.yml`
+  fetches the watchlist's job boards daily at 05:00 UTC and commits the
+  results to `data/ats-cache/`, because scheduled-agent containers usually
+  cannot reach the ATS hosts. It skips itself while the example profile is
+  active, so it does nothing until Phase 5 is merged. Make sure Actions are
+  enabled on their repo (forks and template copies sometimes start with them
+  disabled), then offer to trigger it once by hand (Actions tab, "Fetch ATS
+  cache", "Run workflow") so the first `/scan-companies` has data.
 - **Auto-merge:** in the GitHub repo settings, enable "Allow auto-merge" so
   routine PRs that only touch `postings/` and `applications.yaml` merge
   themselves (`.github/workflows/auto-merge-routine.yml`).

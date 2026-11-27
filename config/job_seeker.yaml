@@ -53,7 +53,7 @@ compensation:
   base_salary_min_gbp: 65000
   base_salary_target_gbp: 80000
   base_salary_stretch_gbp: 95000
-  # US-headquartered firms often quote USD; convert at the current rate when comparing.
+  # Postings quoted in another currency are converted at the current rate when comparing.
   # Sector-specific floor overrides. The base floor assumes a private-sector
   # package. Where pension / leave / job security materially offset a lower
   # base, the floor is relaxed. job-matcher detects the sector from the posting
@@ -192,6 +192,14 @@ contracting:
 discovery:
   freshness_days: 7             # ignore postings older than this
   max_candidates_per_run: 20    # cap matcher invocations per scan routine run
+  # Title filter for company-watchlist scans (scripts/fetch_ats_cache.py and
+  # /scan-companies). Every target_roles entry is already a token, with leading
+  # seniority words stripped ("Senior Data Analyst" also matches "Data Analyst,
+  # Senior"). Add broader or employer-specific title fragments here to widen
+  # the net; job-matcher still judges every candidate. Lowercase substrings.
+  title_keywords:
+    - analytics
+    - insight
 
 # Stylistic conventions for generated text.
 style:
