@@ -5,11 +5,15 @@ name: Fetch ATS cache
 # Writes data/ats-cache/manifest.json plus per-candidate body markdowns to
 # data/ats-cache/bodies/{YYYY-MM-DD}/.
 #
-# The Anthropic scheduled-agent container can't reach ATS hosts (egress
-# allowlist blocks all five providers, probed 2026-05-15). This workflow is
-# the producer side of the hybrid: it commits the manifest + bodies to main
-# so /scan-companies in the container reads them from disk in its Tier 1
-# step instead of hitting the network.
+# Scheduled-agent containers often can't reach ATS hosts (egress allowlists
+# block the ATS providers). This workflow is the producer side of the hybrid:
+# it commits the manifest + bodies to main so /scan-companies in the container
+# reads them from disk in its Tier 1 step instead of hitting the network.
+#
+# Skips (successfully, without committing) while the fictional example profile
+# is active or the watchlist is empty, so the template itself never
+# accumulates cached postings. It starts producing a cache the day after
+# /onboard flips profile.is_example_profile to false.
 #
 # Scheduled 2 hours before the daily /scan-companies routine (07:00 UTC), so
 # the manifest is fresh when the skill loads it.
@@ -33,16 +37,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Cheap pre-check so the template (example profile) does no network work.
+      # fetch_ats_cache.py re-checks the same conditions for local runs.
+      - name: Skip until onboarded
+        id: guard
+        run: |
+          if grep -Eq '^\s*is_example_profile:\s*true' config/job_seeker.yaml; then
+            echo "Example profile still active - run /onboard first. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Python
+        if: steps.guard.outputs.skip != 'true'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: pip
 
       - name: Install dependencies
+        if: steps.guard.outputs.skip != 'true'
         run: pip install --quiet requests pyyaml
 
       - name: Fetch ATS list endpoints and bodies
+        if: steps.guard.outputs.skip != 'true'
         run: python scripts/fetch_ats_cache.py
 
       # Direct push from github-actions[bot] - does NOT go through a PR, so
@@ -50,6 +69,7 @@ jobs:
       # defensive: no current push listener watches data/ats-cache/**, but
       # future workflows might.
       - name: Commit manifest and bodies if changed
+        if: steps.guard.outputs.skip != 'true'
         run: |
           if [ -n "$(git status --porcelain data/ats-cache/)" ]; then
             git config user.name 'github-actions[bot]'

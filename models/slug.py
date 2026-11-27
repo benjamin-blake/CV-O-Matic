@@ -7,8 +7,8 @@ calling routine imports ``mint_slug`` and passes the result to the subagent.
 
 Usage from a shell, e.g. inside a routine step:
 
-    python -c "from models.slug import mint_slug; print(mint_slug('Anthropic', 'Data Engineer, Safeguards'))"
-    # 2026-05-15_anthropic_data_engineer_safeguards
+    python -c "from models.slug import mint_slug; print(mint_slug('Baskerville & Co', 'Senior Data Analyst, Estates'))"
+    # 2026-05-15_baskerville_co_senior_data_analyst_estates
 """
 
 from __future__ import annotations

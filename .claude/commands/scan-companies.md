@@ -7,7 +7,7 @@ argument-hint: [--only <company_name>] [--no-notify]
 
 Iterate over every company in `config/company_watchlist.yaml`, fetch their open postings via the three-tier strategy below, filter against the candidate's requirements in `config/job_seeker.yaml`, score with the `job-matcher` subagent, append entries to `applications.yaml`, and open one consolidated PR. **British English** throughout. No em-dashes.
 
-This catches roles that never reach Indeed - AI labs, civil service, niche scale-ups - which are easy to miss on a broad job-board search.
+This catches roles that never reach Indeed (employers who only post on their own careers page, niche or smaller companies), which are easy to miss on a broad job-board search.
 
 This routine is **discovery-only**. It does NOT build CVs - you run `/build-cv {slug}` manually for postings you want to apply to.
 
@@ -31,7 +31,7 @@ Run `python3 -m models.profile --check`. If it exits non-zero, stop: tell the us
 ## Step 1: Load requirements and dedup set
 
 Read `config/job_seeker.yaml` in full. The fields that drive filtering:
-- `target_roles` - title substrings (case-insensitive partial match)
+- `target_roles` and the optional `discovery.title_keywords` - title topic tokens (case-insensitive partial match; see Step 3)
 - `location.primary`, `location.acceptable_uk_cities`, `location.remote_ok`, `location.onsite_ok`, `location.international`
 - `must_have`, `deal_breakers` - used by `job-matcher`, not directly here
 
@@ -93,7 +93,7 @@ Tier 1 candidates have already been filtered by `scripts/fetch_ats_cache.py :: p
 For Tier 2 / Tier 3 candidates (no manifest), apply the same semantics here:
 
 **Title filter - broad topic match, seniority NOT checked at this stage:**
-- Pass if the (lowercased) title contains any of the topic tokens listed in `scripts/fetch_ats_cache.py :: TITLE_TOPIC_TOKENS`.
+- Pass if the (lowercased) title contains any topic token. Tokens are derived exactly as `scripts/fetch_ats_cache.py :: derive_title_tokens` does: every `target_roles` entry lowercased, the same entry with leading seniority words (senior, lead, principal, staff, ...) stripped, and every `discovery.title_keywords` entry. Print them with `python3 -c "import sys,yaml; sys.path.insert(0,'scripts'); import fetch_ats_cache as f; print(f.derive_title_tokens(yaml.safe_load(open('config/job_seeker.yaml'))))"`.
 - Reject if the title contains a junior hint (junior, graduate, intern, apprentice, trainee).
 
 **Location filter:**
